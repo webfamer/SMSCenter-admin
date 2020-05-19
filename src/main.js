@@ -7,7 +7,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 import clipboard from 'clipboard';
 import '@/styles/index.scss' // global css
-
+import options from '@/assets/js/option'
 import App from './App'
 import store from './store'
 import router from './router'
@@ -35,7 +35,7 @@ Vue.use(ElementUI)
 //注册到vue原型上
 Vue.prototype.clipboard = clipboard;
 Vue.config.productionTip = false
-
+Vue.prototype.$selectOptions = options
 new Vue({
   el: '#app',
   router,

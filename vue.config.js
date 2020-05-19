@@ -30,6 +30,7 @@ module.exports = {
   lintOnSave: false,
   productionSourceMap: false,
   devServer: {
+    sockHost:'http://localhost:9528/',
     port: port,
     open: true,
     overlay: {
