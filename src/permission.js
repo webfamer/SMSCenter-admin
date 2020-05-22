@@ -43,10 +43,16 @@ router.beforeEach(async(to, from, next) => {
       //     NProgress.done()
       //   }
       // }
-      let isInitMenu = store.state.user.isInitMenu;
-     if(isInitMenu){
-
-     }
+      const isInitMenu = store.state.user.isInitMenu
+        if(isInitMenu){
+          next()
+        }else{
+          let menuItem = JSON.parse(window.localStorage.getItem('tongxing_menu'));
+          store.dispatch('user/getMenu',menuItem).then(()=>{
+            next(to.path)
+          })
+        }
+      // next()
     }
   } else {
     /* has no token*/

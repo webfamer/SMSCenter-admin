@@ -57,7 +57,6 @@
 </template>
 
 <script>
-import CustomerApi from "@/api/customer.js";
 import { resetDataAttr } from "@/utils/index.js";
 import {
   validatePhone,

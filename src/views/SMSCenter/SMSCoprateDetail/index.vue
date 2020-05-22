@@ -2,12 +2,12 @@
   <div class="customer">
     <el-card class="search-box" shadow="hover">
       <el-row :gutter="20">
-        <el-col :span="3">
+        <el-col class="joker-col" :lg="6" :md="8">
           <div class="block">
             <el-input v-model="search.merchantChiName" placeholder="搜索客户名称"></el-input>
           </div>
         </el-col>
-        <el-col :span="5" :offset="1">
+        <el-col class="joker-col" :lg="6" :md="8">
           <el-date-picker
             v-model="search.date"
             type="daterange"
@@ -17,7 +17,7 @@
             end-placeholder="结束日期"
           ></el-date-picker>
         </el-col>
-        <el-col :span="4" :offset="1" :lg="6" :md="8">
+        <el-col class="joker-col" :lg="6" :md="8">
           <el-button type="primary" icon="el-icon-search" @click="doSearch">查询</el-button>
           <el-button type="primary" icon="el-icon-refresh-right" @click="resetForm">重置</el-button>
         </el-col>
@@ -95,7 +95,6 @@
 import Detail from "./Detail";
 import PageMixins from "@/mixins/pageMixins";
 import Pagination from "@/components/Pagination/index";
-import customerApi from "@/api/customer.js";
 import _ from "lodash";
 import { resetDataAttr } from "@/utils/index.js";
 export default {
@@ -288,17 +287,16 @@ export default {
 </script>
 <style lang="scss" scoped>
 .customer {
-  .search-box {
-    .el-row {
-      padding-left: 7px;
-    }
-  }
   .content-box {
     margin: 30px;
     box-sizing: border-box;
     .pagination {
       margin-top: 30px;
     }
+  }
+  .joker-col {
+    width: auto;
+    margin-bottom: 10px;
   }
 }
 </style>

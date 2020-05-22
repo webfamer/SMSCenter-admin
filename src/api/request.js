@@ -5,7 +5,7 @@ import store from '@/store'
 import { getToken, removeToken } from '@/utils/auth'
 import router from '@/router';
 
-let baseURL = 'http://10.0.52.94:7000';
+let baseURL = 'http://10.0.52.17:7000';
 // if (process.env.NODE_ENV === "production") {
 //   baseURL = process.env.VUE_APP_BASE_API
 // }
@@ -58,6 +58,21 @@ service.interceptors.response.use(
     //     });
     //   }
     // }
+    console.log(error.response.status)
+    if(error.response.status===401){
+      if(router.history.current.path==='/login'){
+        Message({
+          message: '用户名或密码错误',
+          type: 'error',
+          duration: 3 * 1000
+        })
+      }else{
+        //401 清除数据 跳登录框
+        store.dispatch('user/logout');
+      router.push(`/login`)
+
+      }
+    }
     return Promise.reject(error);
   }
 )
@@ -88,7 +103,9 @@ function http(config) {
       config.data = processData(config.data);
     }
   } else {
-    config.params = config.data;
+    console.log(config)
+    // config.params = config.data;
+    config.url = config.url+'/'+config.data
   }
   return service(config);
 }

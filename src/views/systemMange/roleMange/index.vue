@@ -17,8 +17,7 @@
           border
           :default-sort="{ prop: 'date', order: 'descending' }"
         >
-
-        <el-table-column type="index" label="#"></el-table-column>
+          <el-table-column type="index" label="#"></el-table-column>
           <el-table-column
             prop="roleName"
             label="角色名"
@@ -121,6 +120,10 @@ export default {
       this.getTableData();
     },
     getTableData() {
+      if (this.page.start > 1 && this.tableData.length === 1) {
+        //如果是最后一条数据，更改请求的当前页
+        this.page.start -= 1;
+      }
       rolesApi
         .getRolesList({
           platform: 2,

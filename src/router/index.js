@@ -37,7 +37,7 @@ export const constantRoutes = [
     hidden: true
   },
 
-  {
+{
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true
@@ -179,10 +179,16 @@ export const asyncRoutes = [
         meta: { title: '短信统计', icon: 'tree' }
       },
       {
-        path: 'SMSOutputManage',
-        name: 'SMSOutputManage',
-        component: () => import('@/views/SMSCenter/SMSOutputManage/index'),
-        meta: { title: '短信输出管理', icon: 'tree' }
+        path: 'CompanyManage',
+        name: 'CompanyManage',
+        component: () => import('@/views/SMSCenter/CompanyManage/index'),
+        meta: { title: '公司管理', icon: 'tree' }
+      },
+      {
+        path: 'AppManage',
+        name: 'AppManage',
+        component: () => import('@/views/SMSCenter/AppManage/index'),
+        meta: { title: '应用管理', icon: 'tree' }
       },
     ]
   },
