@@ -55,6 +55,100 @@ export const constantRoutes = [
     }]
   },
 
+  // {
+  //   path: '/SMSCenter',
+  //   component: Layout,
+  //   name: 'SMSCenter',
+  //   meta: { title: '短信中心', icon: 'setting', breadcrumb: false },
+  //   children: [
+  //     {
+  //       path: 'SMSCoprateDetail',
+  //       name: 'SMSCoprateDetail',
+  //       component: () => import(/* webpackChunkName: "SMSCoprateDetail" */ '@/views/SMSCenter/SMSCoprateDetail/index'),
+  //       meta: { title: '短信合作详情', icon: 'tree' }
+  //     },
+  //     {
+  //       path: 'SMSOrganiManage',
+  //       name: 'SMSOrganiManage',
+  //       component: () => import('@/views/SMSCenter/SMSOrganiManage/index'),
+  //       meta: { title: '短信机构管理', icon: 'tree' }
+  //     }, {
+  //       path: 'SMSDispatchDetail',
+  //       name: 'SMSDispatchDetail',
+  //       component: () => import('@/views/SMSCenter/SMSDispatchDetail/index'),
+  //       meta: { title: '短信发送详情', icon: 'tree' }
+  //     },
+  //     {
+  //       path: 'SMSCount',
+  //       name: 'SMSCount',
+  //       component: () => import('@/views/SMSCenter/SMSCount/index'),
+  //       meta: { title: '短信统计', icon: 'tree' }
+  //     },
+  //     {
+  //       path: 'SMSOutputManage',
+  //       name: 'SMSOutputManage',
+  //       component: () => import('@/views/SMSCenter/SMSOutputManage/index'),
+  //       meta: { title: '短信输出管理', icon: 'tree' }
+  //     },
+  //   ]
+  // },
+
+  // {
+  //   path: '/SystemManage',
+  //   component: Layout,
+  //   name: 'SystemManage',
+  //   meta: { title: '系统管理', icon: 'setting', breadcrumb: false },
+  //   children: [
+  //     {
+  //       path: 'accountMange',
+  //       name: 'accountMange',
+  //       component: () => import('@/views/systemMange/accountMange/index.vue'),
+  //       meta: { title: '账号管理', icon: 'personal' }
+  //     },
+  //     {
+  //       path: 'rightManage',
+  //       name: 'accountMange',
+  //       component: () => import('@/views/systemMange/rightManage/index.vue'),
+  //       meta: { title: '权限管理', icon: 'personal' }
+  //     },
+  //     {
+  //       path: 'roleMange',
+  //       name: 'accountMange',
+  //       component: () => import('@/views/systemMange/roleMange/index.vue'),
+  //       meta: { title: '角色管理', icon: 'personal' }
+  //     },
+  //   ]
+  // },
+  
+  // 404 page must be placed at the end !!!
+  
+]
+
+export const asyncRoutes = [
+  {
+    path: '/login',
+    component: () => import('@/views/login/index'),
+    hidden: true
+  },
+
+  {
+    path: '/404',
+    component: () => import('@/views/404'),
+    hidden: true
+  },
+
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/dashboard',
+    children: [{
+      path: 'dashboard',
+      name: 'Dashboard',
+      component: () => import('@/views/dashboard/index'),
+      meta: { title: 'Dashboard', icon: 'dashboard' }
+    }]
+  },
+
   {
     path: '/SMSCenter',
     component: Layout,
@@ -107,13 +201,13 @@ export const constantRoutes = [
       },
       {
         path: 'rightManage',
-        name: 'accountMange',
+        name: 'rightMange',
         component: () => import('@/views/systemMange/rightManage/index.vue'),
         meta: { title: '权限管理', icon: 'personal' }
       },
       {
         path: 'roleMange',
-        name: 'accountMange',
+        name: 'roleMange',
         component: () => import('@/views/systemMange/roleMange/index.vue'),
         meta: { title: '角色管理', icon: 'personal' }
       },
@@ -123,6 +217,7 @@ export const constantRoutes = [
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
+
 
 const createRouter = () => new Router({
   // mode: 'history', // require service support

@@ -1,302 +1,238 @@
 <template>
   <div class="customer">
-    <pan-shi-search>
-      <template #1>
-        <el-input v-model="search.merchantChiName" maxlength="10" placeholder="搜索客户名称"></el-input>
-      </template>
-      <template #2>
-        <el-date-picker
-          v-model="search.date"
-          type="daterange"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        ></el-date-picker>
-      </template>
-      <template #3>
-        <pan-shi-button type="search" @click="getTableData(undefined)">查询</pan-shi-button>
-        <pan-shi-button type="reset" @click="resetForm">重置</pan-shi-button>
-      </template>
-    </pan-shi-search>
+    <el-card class="search-box" shadow="hover">
+      <el-row :gutter="24">
+        <el-col class="joker-col" :lg="6" :md="8">
+          <div class="block">
+            <el-input
+              v-model="search.merchantChiName"
+              placeholder="搜索客户名称"
+            ></el-input>
+          </div>
+        </el-col>
+        <el-col class="joker-col" :lg="6" :md="8">
+          <el-date-picker
+            v-model="search.date"
+            type="daterange"
+            value-format="yyyy-MM-dd"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+          ></el-date-picker>
+        </el-col>
+        <el-col class="joker-col" :lg="6" :md="8">
+          <el-button type="primary" icon="el-icon-search" @click="doSearch"
+            >查询</el-button
+          >
+          <el-button
+            type="primary"
+            icon="el-icon-refresh-right"
+            @click="resetForm"
+            >重置</el-button
+          >
+        </el-col>
+      </el-row>
+    </el-card>
 
-    <pan-shi-table
-      :table="table"
-      :total="total"
-      :currentPage.sync="currentPage"
-      :pageSize.sync="pageSize"
-      @buttonsEvent="buttonsEvent"
-      @pagination="getTableData"
-    >
-      <pan-shi-button type="add" @click="add">新增</pan-shi-button>
-    </pan-shi-table>
+    <div class="content-box">
+      <el-card shadow="never">
+        <div slot="header" class="clearfix">
+          <el-button type="primary" icon="el-icon-plus" @click="add"
+            >新增</el-button
+          >
+        </div>
+        <el-table
+          :data="tableData"
+          style="width: 100%"
+          :default-sort="{ prop: 'createTime', order: 'ascending' }"
+        >
+          <el-table-column
+            prop="createAdminId"
+            label="创建者id"
+            min-width="90"
+          ></el-table-column>
+          <el-table-column
+            prop="createTime"
+            label="创建时间"
+            min-width="90"
+          ></el-table-column>
+          <el-table-column
+            prop="phone"
+            label="手机号"
+            min-width="90"
+          ></el-table-column>
+          <el-table-column
+            prop="lastLoginTime"
+            label="最后登陆时间"
+            min-width="90"
+          ></el-table-column>
+          <el-table-column
+            prop="loginName"
+            label="登陆名称"
+            min-width="90"
+          ></el-table-column>
+          <el-table-column
+            prop="platform"
+            label="账户类型"
+            min-width="90"
+          ></el-table-column>
+          <el-table-column
+            prop="roleId"
+            label="权限id"
+            min-width="90"
+          ></el-table-column>
+          <el-table-column
+            prop="roleName"
+            label="角色名称"
+            min-width="90"
+          ></el-table-column>
+          <el-table-column
+            prop="superAdmin"
+            label="超级管理员"
+            min-width="90"
+          ></el-table-column>
+          <el-table-column label="操作" width="400">
+            <template slot-scope="scope">
+              <el-row v-show="scope.row.roleId !== 0">
+                <el-button
+                  @click="delAccount(scope.row)"
+                  type="text"
+                  icon="el-icon-delete-solid"
+                  size="small"
+                  >删除</el-button
+                >
+                <el-button
+                  type="text"
+                  icon="el-icon-s-tools"
+                  size="small"
+                  @click="edit(scope.row)"
+                  >编辑</el-button
+                >
+              </el-row>
+            </template>
+          </el-table-column>
+        </el-table>
+        <Pagination
+          :page="page"
+          @sizeChange="handleSizeChange"
+          @currentChange="handleCurrentChange"
+        ></Pagination>
+      </el-card>
+    </div>
     <Detail ref="detail" @getList="getTableData"></Detail>
   </div>
 </template>
 <script>
 import Detail from "./Detail";
+import PageMixins from "@/mixins/pageMixins";
 import accountApi from "@/api/accountApi";
+import Pagination from "@/components/Pagination/index";
 import _ from "lodash";
-import { resetDataAttr, getPagination } from "@/utils/index.js";
-
+import { resetDataAttr } from "@/utils/index.js";
 export default {
-  components: {
-    Detail
-  },
+  mixins: [PageMixins],
   data() {
     return {
-      // 表格数据
-      ...getPagination(),
-      table: {
-        body: [
-          { fieldName: "createAdminId", fieldText: "创建者id" },
-          { fieldName: "createTime", fieldText: "创建时间" },
-          { fieldName: "id", fieldText: "id" },
-          { fieldName: "phoneNumber", fieldText: "手机号码" },
-          {
-            fieldName: "lastLoginTime",
-            fieldText: "最后登陆时间",
-            sortable: true,
-            type: 'time'
-          },
-           { fieldName: "loginName", fieldText: "登陆名称" },
-           { fieldName: "phone", fieldText: "手机号" },
-           { fieldName: "platform", fieldText: "账户类型" },
-           { fieldName: "roleId", fieldText: "权限id" },
-           { fieldName: "roleName", fieldText: "角色名称" },
-           { fieldName: "superAdmin", fieldText: "超级管理员" },
-          {
-            fieldText: "操作",
-            type: "buttons",
-            content: [
-              {
-                fieldText: "APP",
-                icon: "el-icon-menu"
-              },
-              {
-                fieldText: "开通服务",
-                icon: "el-icon-s-custom"
-              },
-              {
-                fieldText: "编辑",
-                icon: "el-icon-s-tools"
-              },
-              {
-                fieldText: "停用",
-                icon: "el-icon-remove"
-              },
-              {
-                fieldText: "启用",
-                icon: "el-icon-remove"
-              },
-              {
-                fieldText: "删除",
-                icon: "el-icon-delete-solid"
-              }
-            ],
-            tableColumnAttributes: {
-              width: 400
-            }
-          }
-        ],
-        tableAttributes: {
-          data: []
-        },
-      },
-      //
       input: "",
+      value1: "",
+      tableData: [],
+      username: "",
       search: {
         date: []
       }
     };
   },
   created() {
+    console.log("created");
     this.getTableData();
   },
   methods: {
-    getTableData(obj) {
-      if (obj && obj.page) {
-        this.currentPage = obj.page;
-        this.pageSize = obj.limit;
-      }
-
-      if (this.currentPage > 1 && this.table.tableAttributes.data.length === 1) {
-        // 如果是最后一条数据，更改请求的当前页
-        this.currentPage = 1;
-      }
-
-      let params = {
-        merchantChiName: _.trim(this.search.merchantChiName),
-        startTime: this.search.date[0],
-        endTime: this.search.date[1]
-      };
+    getTableData() {
       accountApi
         .getAccount({
-          ...params,
           page: {
-            current: this.currentPage,
-            size: this.pageSize
+            current: this.page.start,
+            size: this.page.limit
           }
         })
         .then(res => {
-          this.table.tableAttributes.data = res.data.records;
-          this.total = res.data.total;
+          this.tableData = res.data;
+          this.page.total = res.page.total;
+          this.page.start = res.page.current;
         });
     },
-    resetForm() {
-      resetDataAttr(this, "search");
-      this.getTableData();
-    },
-    disableCustomer(row) {
-      //停用商户
+    delAccount(row) {
       console.log(row);
-      this.$confirm(
-        "<strong>是否确定停用客户?</strong><br>停用客户后无法使用所有服务",
-        "确认提示",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          dangerouslyUseHTMLString: true,
-          type: "warning"
-        }
-      )
-        .then(() => {
-          customerApi
-            .delCustomer({
-              merchantId: row.id,
-              status: 98
-            })
-            .then(res => {
-              if ((res.msg = "success")) {
-                this.$message({
-                  type: "success",
-                  message: "已成功停用"
-                });
-                this.getTableData();
-              } else {
-                this.$message.error("保存失败");
-              }
-            });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消停用"
-          });
-        });
-    },
-    enableCustomer(row) {
-      this.$confirm(
-        "<strong>是否确定启用客户?</strong><br>启用后恢复服务的使用",
-        "确认提示",
-        {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          dangerouslyUseHTMLString: true,
-          type: "warning"
-        }
-      )
-        .then(() => {
-          customerApi
-            .delCustomer({
-              merchantId: row.id,
-              status: 1
-            })
-            .then(res => {
-              if ((res.msg = "success")) {
-                this.$message({
-                  type: "success",
-                  message: "已成功启用"
-                });
-                this.getTableData();
-              } else {
-                this.$message.error("保存失败");
-              }
-            });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消启用"
-          });
-        });
-    },
-    delCustomer(row) {
-      this.$confirm("<strong>是否确定删除客户?</strong>", "确认提示", {
+      this.$confirm("<strong>是否删除该账户?</strong>", "确认提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         dangerouslyUseHTMLString: true,
         type: "warning"
       })
         .then(() => {
-          customerApi
-            .delCustomer({
-              merchantId: row.id,
-              status: 99
+          accountApi
+            .delAccount({
+              id: row.id
             })
             .then(res => {
-              if (res.code === 0) {
-                this.$message({
-                  type: "success",
-                  message: "已成功删除"
-                });
+              if (res.code == 0) {
+                this.dialogVisible = false;
                 this.getTableData();
+                this.$message({
+                  message: res.message,
+                  type: "success"
+                });
               } else {
-                this.$message.error("删除失败");
+                this.$message.error(res.message);
               }
             });
         })
         .catch(() => {
           this.$message({
             type: "info",
-            message: "已取消删除"
+            message: "取消删除"
           });
         });
     },
+
     edit(row) {
-      this.$refs.detail.openDialog(row.id);
+      console.log(row);
+      this.$refs.detail.openDialog(row);
     },
-    add(formName) {
-      resetDataAttr(this, "search");
+    add() {
       this.$refs.detail.openDialog();
     },
+    handleSizeChange(v) {
+      this.page.limit = v;
+      this.getTableData();
+    },
+    handleCurrentChange(v) {
+      this.page.start = v;
+      this.getTableData();
+    },
+    doSearch() {
+      console.log(this.search);
+      this.getTableData();
+    },
+    resetForm() {
+      this.getTableData();
+      resetDataAttr(this, "search");
+    },
     jumpsAppItem(row) {
-      this.$router.push({ name: "app", params: row });
+      this.$router.push({ name: "appitem", params: row });
     },
     jumpAppservice(row) {
-      this.$router.push({ name: "service", params: row });
-    },
-    buttonsEvent({scope, btnIndex}) {
-      switch (btnIndex) {
-        case 0:
-          this.jumpsAppItem(scope.row);
-          break;
-        case 1:
-          this.jumpAppservice(scope.row);
-          break;
-        case 2:
-          this.edit(scope.row);
-          break;
-        case 3:
-          this.disableCustomer(scope.row);
-          break;
-        case 4:
-          this.enableCustomer(scope.row);
-          break;
-        case 5:
-          this.delCustomer(scope.row);
-          break;
-      }
+      this.$router.push({ name: "appservice", params: row });
     }
+  },
+  components: {
+    Detail,
+    Pagination
   }
 };
 </script>
 <style lang="scss" scoped>
 .customer {
-  .search-box {
-    .el-row {
-      padding-left: 7px;
-    }
-  }
   .content-box {
     margin: 30px;
     box-sizing: border-box;
@@ -304,9 +240,9 @@ export default {
       margin-top: 30px;
     }
   }
-}
-.joker-col {
-  width: auto;
-  margin-bottom: 10px;
+  .joker-col {
+    width: auto;
+    margin-bottom: 10px;
+  }
 }
 </style>

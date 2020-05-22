@@ -11,9 +11,12 @@ import options from '@/assets/js/option'
 import App from './App'
 import store from './store'
 import router from './router'
+import encrypt from '@/assets/js/rsa'
 // import '@/permission' // permission control
 import '@/icons' // icon
-// import '@/permission' // permission control
+import '@/permission' // permission control
+
+
 
 /**
  * If you don't want to use mock-server
@@ -36,6 +39,7 @@ Vue.use(ElementUI)
 Vue.prototype.clipboard = clipboard;
 Vue.config.productionTip = false
 Vue.prototype.$selectOptions = options
+Vue.prototype.$encrypt = encrypt
 new Vue({
   el: '#app',
   router,

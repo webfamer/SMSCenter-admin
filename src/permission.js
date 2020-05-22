@@ -43,7 +43,10 @@ router.beforeEach(async(to, from, next) => {
       //     NProgress.done()
       //   }
       // }
-      next()
+      let isInitMenu = store.state.user.isInitMenu;
+     if(isInitMenu){
+
+     }
     }
   } else {
     /* has no token*/

@@ -2,7 +2,7 @@
 import request from '@/api/request'
 function addAccount(data) {
   return request({
-    url: '/sys/admin/addAdmin',
+    url: '/manage/sys/admin/addAdmin',
     method: 'post',
     data: { ...data }
   })
@@ -10,21 +10,21 @@ function addAccount(data) {
 
 function delAccount(data) {
   return request({
-    url: '/sys/admin/deleteAdmin',
+    url: '/manage/sys/admin/deleteAdmin',
     method: 'post',
     data: { ...data}
   })
 }
 function eidtAccount(data) {
   return request({
-    url: '/sys/admin/modifyAdmin',
+    url: '/manage/sys/admin/modifyAdmin',
     method: 'post',
     data: { ...data }
   })
 }
 function getAccount(data) {
   return request({
-    url: '/sys/admin/adminList',
+    url: '/manage/sys/admin/adminList',
     method: 'post',
     data: { ...data }
   })
@@ -32,7 +32,7 @@ function getAccount(data) {
 
 function resetAccountPwd(data) {
     return request({
-      url: '/sys/admin/resetPwd',
+      url: '/manage/sys/admin/resetPwd',
       method: 'post',
       data: { ...data }
     })

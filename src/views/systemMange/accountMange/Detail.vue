@@ -12,20 +12,38 @@
       <el-form-item label="姓名" prop="name">
         <el-input v-model="form.name"></el-input>
       </el-form-item>
-      <el-form-item label="密码" prop="password">
+      <el-form-item label="密码" prop="password" v-if="showPasswordInput">
         <el-input v-model="form.password"></el-input>
       </el-form-item>
-      <el-form-item label="运营角色" prop="platform">
-        <el-input v-model="form.platform"></el-input>
+      <el-form-item label="身份类型" prop="platform">
+        <el-select v-model="form.platform" placeholder="请选择">
+          <el-option
+            v-for="item in this.$selectOptions['plantform']"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+            :disabled="item.disabled"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="角色id" prop="roleId">
-        <el-input v-model="form.roleId"></el-input>
+        <el-select v-model="form.roleId" placeholder="请选择">
+          <el-option
+            v-for="item in this.roleNameData"
+            :key="item.id"
+            :label="item.roleName"
+            :value="item.id"
+            :disabled="item.disabled"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="手机号码" prop="phone">
+        <el-input v-model.number="form.phone"></el-input>
       </el-form-item>
       <el-form-item label="工号" prop="operId">
         <el-input v-model="form.operId"></el-input>
-      </el-form-item>
-      <el-form-item label="手机号码">
-        <el-input v-model.number="form.phone"></el-input>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -37,6 +55,7 @@
 
 <script>
 import accountApi from "@/api/accountApi";
+import rolesApi from "@/api/rolesApi";
 import { resetDataAttr } from "@/utils/index.js";
 import {
   validatePhone,
@@ -48,24 +67,24 @@ export default {
     return {
       form: {
         loginName: "",
+        password: "",
         name: "",
-        description: "",
-        operId: "",
-        phone: ""
+        platform: "",
+        roleId: ""
       },
+      showPasswordInput: true,
+      roleNameData: [],
       dialogVisible: false,
-      title: "添加客户",
+      title: "添加角色",
       formRules: {
-        loginName: [
-          { required: true, message: "不能为空", trigger: "blur" }
-        ],
+        loginName: [{ required: true, message: "不能为空", trigger: "blur" }],
         password: [{ required: true, message: "不能为空", trigger: "blur" }],
-        name: [
-          { required: true, message: "不能为空", trigger: "blur" },
-        ],
+        name: [{ required: true, message: "不能为空", trigger: "blur" }],
         platform: [{ required: true, message: "不能为空", trigger: "blur" }],
-        roleId: [
+        roleId: [{ required: true, message: "不能为空", trigger: "blur" }],
+        phone: [
           { required: true, message: "不能为空", trigger: "blur" },
+          { validator: validatePhone, trigger: "blur" }
         ]
       }
     };
@@ -78,54 +97,64 @@ export default {
         })
         .catch(_ => {});
     },
-    openDialog(id) {
+    openDialog(row) {
+      console.log(row,'传递的数据')
       this.dialogVisible = true;
-      this.$nextTick(() => {
+      this.getRoleNameList();
+      if (row) {
+        this.title = "编辑角色"; //切换弹窗标题
+        this.showPasswordInput = false;
+        this.$nextTick(() => {
+          this.form = row;
+        });
+      } else {
+        this.showPasswordInput = true;
+        this.title = "新增角色";
+         this.$nextTick(() => {
         this.$refs["form"].resetFields();
         resetDataAttr(this, "form");
       });
-      if (id) {
-        this.title = "编辑客户"; //切换弹窗标题
-        accountApi
-          .getCustomerDetail({
-            merchantId: id
-          })
-          .then(res => {
-            if (res.code === 0) {
-              this.form = res.data;
-            }
-          });
       }
+    },
+    getRoleNameList() {
+      rolesApi.getRoleNameList({ platform: 2 }).then(res => {
+        this.$nextTick(() => {
+          this.roleNameData = res.data;
+        });
+      });
     },
     addAccount(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.form.id) {
             accountApi
-              .eidtCustomer({
-                merchantId: this.form.id,
+              .eidtAccount({
                 ...this.form
               })
               .then(res => {
                 console.log(res);
-                if (res.code === 0) {
+                if (res.code == 0) {
                   this.dialogVisible = false;
                   this.$message({
-                    message: res.msg,
+                    message: res.message,
                     type: "success"
                   });
                   this.$emit("getList");
                 } else {
-                  this.$message.error(res.msg);
+                  this.$message.error(res.message);
                 }
               });
           } else {
+            //加密密码
+         
+            let password = this.$encrypt.encodePwd(this.form.password); // 将password加密
             accountApi
               .addAccount({
-                ...this.form
+                ...this.form,
+                password
               })
               .then(res => {
-                if (res.code === 0) {
+                if (res.code == 0) {
                   this.dialogVisible = false;
                   this.$message({
                     message: "保存成功",
@@ -133,7 +162,7 @@ export default {
                   });
                   this.$emit("getList");
                 } else {
-                  this.$message.error(res.msg);
+                  this.$message.error(res.message);
                 }
               });
           }
@@ -144,7 +173,8 @@ export default {
       });
       console.log(this.form, "hahah");
     }
-  }
+  },
+  created() {}
 };
 </script>
 

@@ -164,16 +164,16 @@ export default {
     addright(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+            let  rightName =  JSON.stringify({
+                  "en-us": this.form.EnName,
+                  "zh-CN": this.form.ZhName
+                })
           if (this.form.id) {
-            let params = this.form;
-            delete params.ZhName;
-            delete params.EnName;
-            delete params.createTime;
-            delete params.updateTime;
-            console.log(params,'是否有superId');
+
             rightApi
               .eidtright({
-                ...params
+                ...this.form,
+                rightName
               })
               .then(res => {
                 if (res.code == 0) {
@@ -190,17 +190,11 @@ export default {
           } 
           else {
             let addStatus = window.localStorage.getItem("addStatus");
-            let params = { ...this.form };
-            delete params.ZhName;
-            delete params.EnName;
             rightApi
               .addright({
-                ...params,
-                rightName: JSON.stringify({
-                  "en-us": this.form.EnName,
-                  "zh-CN": this.form.ZhName
-                }),
+                ...this.form,
                 platform: 2,
+                rightName,
                 superId: window.localStorage.getItem("myselfId")
               })
               .then(res => {

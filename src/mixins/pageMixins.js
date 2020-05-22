@@ -3,9 +3,9 @@ export default{
         return{
             page:{
                 start:1,
-                pageSize:[3,6,9,12],
+                pageSize:[5,10,15,20],
                 total:20,
-                limit:3
+                limit:5
             }
         }
     }

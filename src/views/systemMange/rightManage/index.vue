@@ -192,7 +192,7 @@ export default {
     formatPlatform(row) {
       let newItem = "";
       this.$selectOptions["plantform"].forEach(item => {
-        if (item.plantform === row.value) {
+        if (item.value === row.platform) {
           newItem = item.label;
         }
       });
@@ -211,9 +211,9 @@ export default {
       return this.processData(row, "rightVisible");
     },
     processData(row, itemName) {
-      let newItem = "";
+       let newItem = "";
       this.$selectOptions[itemName].forEach(item => {
-        if (item.plantform === row.value) {
+        if (item.value === row[itemName]) {
           newItem = item.label;
         }
       });

@@ -5,7 +5,7 @@ import store from '@/store'
 import { getToken, removeToken } from '@/utils/auth'
 import router from '@/router';
 
-let baseURL = '/api';
+let baseURL = 'http://10.0.52.94:7000';
 // if (process.env.NODE_ENV === "production") {
 //   baseURL = process.env.VUE_APP_BASE_API
 // }
@@ -19,7 +19,7 @@ service.interceptors.request.use(
   config => {
     if (store.getters.token) {
       config.headers['token'] = getToken()
-      config.headers['locale'] = 'zh'
+      config.headers['locale'] = 'zh-CN'
     }
     return config
   },

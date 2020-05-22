@@ -17,6 +17,8 @@
           border
           :default-sort="{ prop: 'date', order: 'descending' }"
         >
+
+        <el-table-column type="index" label="#"></el-table-column>
           <el-table-column
             prop="roleName"
             label="角色名"
@@ -56,7 +58,7 @@
           <el-table-column label="操作" min-width="150">
             <template slot-scope="scope">
               <el-button
-                @click="deleteApiGroup(scope.row)"
+                @click="deleteRoles(scope.row)"
                 type="text"
                 icon="el-icon-delete-solid"
                 size="small"
@@ -84,7 +86,7 @@
         </div>
       </el-card>
     </div>
-    <Detail ref="detail" @getList="getCustomerList"></Detail>
+    <Detail ref="detail" @getList="getTableData"></Detail>
   </div>
 </template>
 <script>
@@ -112,11 +114,11 @@ export default {
     },
     handleSizeChange(v) {
       this.page.limit = v;
-      this.getCustomerList();
+      this.getTableData();
     },
     handleCurrentChange(v) {
       this.page.start = v;
-      this.getCustomerList();
+      this.getTableData();
     },
     getTableData() {
       rolesApi
@@ -129,13 +131,13 @@ export default {
         })
         .then(res => {
           this.tableData = res.data;
-          this.page.total = res.data.total;
-          this.page.start = res.data.current;
+          this.page.total = res.page.total;
+          this.page.start = res.page.current;
         });
     },
-    deleteApi(row) {
+    deleteRoles(row) {
       console.log(row);
-      this.$confirm("<strong>是否删除api?</strong>", "确认提示", {
+      this.$confirm("<strong>是否删除该角色?</strong>", "确认提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         dangerouslyUseHTMLString: true,
@@ -144,26 +146,25 @@ export default {
         .then(() => {
           rolesApi
             .delRoles({
-              apiId: row.id,
-              status: 99
+              id: row.id
             })
             .then(res => {
-              if (res.code === 0) {
+              if (res.code == 0) {
                 this.dialogVisible = false;
                 this.getTableData();
                 this.$message({
-                  message: res.msg,
+                  message: res.message,
                   type: "success"
                 });
               } else {
-                this.$message.error(res.msg);
+                this.$message.error(res.message);
               }
             });
         })
         .catch(() => {
           this.$message({
             type: "info",
-            message: "已取消停用"
+            message: "取消删除"
           });
         });
     }
@@ -193,5 +194,18 @@ export default {
       margin-top: 30px;
     }
   }
+}
+.el-tag {
+  margin: 7px;
+}
+.bdtop {
+  border-top: 1px solid #eee;
+}
+.bdbottom {
+  border-bottom: 1px solid #eee;
+}
+.vcenter {
+  display: flex;
+  align-items: center;
 }
 </style>

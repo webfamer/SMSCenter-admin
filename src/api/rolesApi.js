@@ -2,28 +2,28 @@
 import request from '@/api/request'
 function getRolesList(data) {
     return request({
-        url: '/sys/role/roleList',
+        url: '/manage/sys/role/roleList',
         method: 'post',
         data: { ...data }
     })
 }
 function addRoles(data) {
     return request({
-        url: '/sys/role/addRole',
+        url: '/manage/sys/role/addRole',
         method: 'post',
         data: { ...data }
     })
 }
 function delRoles(data) {
     return request({
-        url: '/sys/role/deleteRole',
+        url: '/manage/sys/role/deleteRole',
         method: 'post',
         data: { ...data }
     })
 }
 function eidtRoles(data) {
     return request({
-        url: '/sys/role/modifyRole',
+        url: '/manage/sys/role/modifyRole',
         method: 'post',
         data: { ...data }
     })
@@ -31,7 +31,14 @@ function eidtRoles(data) {
 
 function getRolesTree(data) {
     return request({
-        url: '/sys/role/roleRightTree',
+        url: '/manage/sys/role/roleRightTree',
+        method: 'post',
+        data: { ...data }
+    })
+}
+function getRoleNameList(data) {
+    return request({
+        url: '/manage/sys/role/roleNameList',
         method: 'post',
         data: { ...data }
     })
@@ -45,6 +52,7 @@ export default {
     addRoles,
     delRoles,
     eidtRoles,
-    getRolesTree
+    getRolesTree,
+    getRoleNameList
 }
 
