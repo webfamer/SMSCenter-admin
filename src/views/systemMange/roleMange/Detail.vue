@@ -18,7 +18,6 @@
           ref="treeRef"
           show-checkbox
           node-key="key"
-          default-expand-all
         ></el-tree>
       </el-form-item>
     </el-form>

@@ -5,7 +5,7 @@ import store from '@/store'
 import { getToken, removeToken } from '@/utils/auth'
 import router from '@/router';
 
-let baseURL = 'http://10.0.52.17:7000';
+let baseURL = 'http://10.0.52.51:7000';
 // if (process.env.NODE_ENV === "production") {
 //   baseURL = process.env.VUE_APP_BASE_API
 // }
@@ -58,7 +58,6 @@ service.interceptors.response.use(
     //     });
     //   }
     // }
-    console.log(error.response.status)
     if(error.response.status===401){
       if(router.history.current.path==='/login'){
         Message({
@@ -103,7 +102,6 @@ function http(config) {
       config.data = processData(config.data);
     }
   } else {
-    console.log(config)
     // config.params = config.data;
     config.url = config.url+'/'+config.data
   }

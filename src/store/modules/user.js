@@ -85,7 +85,6 @@ const actions = {
       var last404 = { path: '*', redirect: '/404', hidden: true };
       routesTree.push(last404);
       router.addRoutes(routesTree);
-      console.log(routesTree,'配置好的权限')
       commit('SET_ROUTES', routesTree)
       resolve()
     })
