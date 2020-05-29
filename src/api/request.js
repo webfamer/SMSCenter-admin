@@ -5,7 +5,7 @@ import store from '@/store'
 import { getToken, removeToken } from '@/utils/auth'
 import router from '@/router';
 
-let baseURL = 'http://10.0.52.51:7000';
+let baseURL = 'http://192.168.40.175:7000';
 // if (process.env.NODE_ENV === "production") {
 //   baseURL = process.env.VUE_APP_BASE_API
 // }
@@ -30,6 +30,13 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => {
     const res = response.data;
+    if (res.code != 0) {
+      Message({
+        message: res.message,
+        type: 'error',
+        duration: 3 * 1000
+      })
+    }
     if (res.tokenCode == 5000) {
       Message({
         message: '登陆超时，请重新登陆',
@@ -58,19 +65,26 @@ service.interceptors.response.use(
     //     });
     //   }
     // }
-    if(error.response.status===401){
-      if(router.history.current.path==='/login'){
+    let result = String(error.response.status);
+    let  reg = /^5\d{2}$/;
+    if (error.response.status === 401) {
+      if (router.history.current.path === '/login') {
         Message({
-          message: '用户名或密码错误',
+          message: '认证已失效，请重新登录',
           type: 'error',
           duration: 3 * 1000
         })
-      }else{
+      } else {
         //401 清除数据 跳登录框
         store.dispatch('user/logout');
-      router.push(`/login`)
-
+        router.push(`/login`)
       }
+    }else if(reg.test(result)){
+      Message({
+        message: '服务升级中，请稍后',
+        type: 'error',
+        duration: 3 * 1000
+      })
     }
     return Promise.reject(error);
   }
@@ -84,7 +98,7 @@ function processData(data) { //处理对象空值
       } else {
         processData(data[key])
       }
-    } else if (!data[key]&&data[key]!=0) {
+    } else if (!data[key] && data[key] != 0) {
       delete data[key]
     }
   }
@@ -103,7 +117,9 @@ function http(config) {
     }
   } else {
     // config.params = config.data;
-    config.url = config.url+'/'+config.data
+    if (config.data) {
+      config.url = config.url + '/' + config.data
+    }
   }
   return service(config);
 }

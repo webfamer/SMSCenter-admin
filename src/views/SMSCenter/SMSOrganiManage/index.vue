@@ -7,6 +7,7 @@
       <el-card shadow="never">
         <div slot="header" class="clearfix">
           <el-button type="primary" icon="el-icon-plus" @click="add"
+          v-has="'addOrganiBtn'"
             >新增机构</el-button
           >
         </div>
@@ -51,6 +52,7 @@
           <el-table-column label="操作" min-width="200">
             <template slot-scope="scope">
               <el-button
+              v-has="'delOrganiBtn'"
                 @click="delorgani(scope.row)"
                 type="text"
                 icon="el-icon-delete-solid"
@@ -58,6 +60,7 @@
                 >删除</el-button
               >
               <el-button
+              v-has="'editOrganiBtn'"
                 type="text"
                 icon="el-icon-s-tools"
                 size="small"
@@ -68,6 +71,7 @@
           </el-table-column>
         </el-table>
         <Pagination
+        v-has="'organiPaginationBtn'"
           :page="page"
           @sizeChange="handleSizeChange"
           @currentChange="handleCurrentChange"
@@ -83,6 +87,7 @@ import PageMixins from "@/mixins/pageMixins";
 import organiApi from "@/api/organiApi";
 import Pagination from "@/components/Pagination/index";
 import _ from "lodash";
+import {formatform} from '@/assets/js/tableFormatter'
 import { resetDataAttr } from "@/utils/index.js";
 export default {
   mixins: [PageMixins],
@@ -98,7 +103,6 @@ export default {
     };
   },
   created() {
-    console.log("created");
     this.getTableData();
   },
   methods: {
@@ -172,14 +176,9 @@ export default {
       resetDataAttr(this, "search");
     },
     formatterState(row) {
-      var newitem = {};
-      this.$selectOptions.cooperateState.forEach(item => {
-        if (item.value == row.state) {
-          newitem = item;
-        }
-      });
-    return newitem.label;
+    return formatform(row,'cooperateState','state')
     }
+
   },
   components: {
     Detail,

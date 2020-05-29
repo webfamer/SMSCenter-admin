@@ -13,11 +13,12 @@
           row-key="id"
           :default-sort="{ prop: 'date', order: 'descending' }"
           :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+            :expand-row-keys="expands"
         >
           <el-table-column
             prop="rightName"
             label="菜单名称"
-            min-width="100"
+            min-width="140"
           ></el-table-column>
           <el-table-column
             prop="component"
@@ -28,7 +29,7 @@
             prop="platform"
             min-width="100"
             label="权限类型"
-            :formatter="formatPlatform"
+            :formatter=" formatType"
           ></el-table-column>
           <el-table-column
             prop="requireAuth"
@@ -79,6 +80,7 @@
             <template slot-scope="scope">
               <el-row v-if="scope.row.superId != 0">
                 <el-button
+                v-has="'delRightBtn'"
                   @click="deleteApiGroup(scope.row)"
                   type="text"
                   icon="el-icon-delete-solid"
@@ -86,13 +88,16 @@
                   >删除</el-button
                 >
                 <el-button
+                v-has="'editRightBtn'"
                   type="text"
                   icon="el-icon-s-tools"
                   size="small"
                   @click="edit(scope.row)"
                   >编辑</el-button
                 >
-                <el-popover placement="bottom" trigger="click">
+                <el-popover placement="bottom" trigger="click"  
+                v-has="'addRightBtn'"
+                >
                   <el-row>
                     <el-button
                       type="primary"
@@ -130,7 +135,8 @@ import { resetDataAttr } from "@/utils/index.js";
 export default {
   data() {
     return {
-      tableData: []
+      tableData: [],
+      expands:['1']
     };
   },
   methods: {
@@ -189,15 +195,6 @@ export default {
       });
     },
     // 格式化表格数据
-    formatPlatform(row) {
-      let newItem = "";
-      this.$selectOptions["plantform"].forEach(item => {
-        if (item.value === row.platform) {
-          newItem = item.label;
-        }
-      });
-      return newItem;
-    },
     formatLevel(row) {
       return this.processData(row, "rightLevel");
     },
@@ -223,6 +220,7 @@ export default {
   created() {
     this.getTableData();
   },
+
   components: {
     Detail
   }

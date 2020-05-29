@@ -73,3 +73,12 @@ export function validateAppName(rule, value,callback) {//匹配中文英文数�
       callback();
     }
 }
+
+export function validateIp(rule, value,callback) {//匹配中文英文数字
+  const reg = /^((2[0-4][0-9])|(25[0-5])|(1[0-9]{0,2})|([1-9][0-9])|([1-9]))\.(((2[0-4][0-9])|(25[0-5])|(1[0-9]{0,2})|([1-9][0-9])|([0-9]))\.){2}((2[0-4][0-9])|(25[0-5])|(1[0-9]{0,2})|([1-9][0-9])|([1-9]))$/;
+    if ((!reg.test(value)) && value != '') {
+      callback(new Error('ip不合法'));
+    } else {
+      callback();
+    }
+}

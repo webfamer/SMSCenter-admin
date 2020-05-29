@@ -29,6 +29,21 @@ function getAppList(data) {
     data: { ...data }
   })
 }
+function getAppAll(data) {
+  return request({
+    url: '/manage/application/listAll',
+    method: 'get',
+    data: data
+  })
+}
+
+function getAppDetail(data) {
+  return request({
+    url: '/manage/application/get',
+    method: 'get',
+    data: data
+  })
+}
 
 
 
@@ -37,6 +52,8 @@ export default {
   addApp,
   delApp,
   eidtApp,
-  getAppList
+  getAppList,
+  getAppAll,
+  getAppDetail
 }
 

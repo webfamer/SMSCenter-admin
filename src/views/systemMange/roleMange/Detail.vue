@@ -13,6 +13,7 @@
     <el-form ref="form" :model="form" label-width="150px">
       <el-form-item label="角色权限：">
         <el-tree
+        :check-strictly="keyAssociate"
           :data="rightsList"
           :props="treeProps"
           ref="treeRef"
@@ -41,6 +42,7 @@ export default {
       form: {},
       dialogVisible: false,
       treeData: [],
+      keyAssociate:false,
       // 权限树
       rightsList: [],
       treeProps: {
@@ -59,13 +61,13 @@ export default {
     },
     openDialog(data) {
       this.resetform();
-      if (data) {
-        this.form = data;
-      }
       this.dialogVisible = true;
       if (data) {
+        this.keyAssociate=true;
+        this.form = data;
         this.getTreeNode(data.id);
       } else {
+        this.keyAssociate=false
         this.getTreeNode();
       }
     },
@@ -74,7 +76,7 @@ export default {
         rolesApi.getRolesTree({ platform: 2, id: id }).then(res => {
           this.rightsList = res.data.rightTree;
           console.log(res.data.rightIds);
-          this.$refs.treeRef.setCheckedKeys(res.data.rightIds);
+          this.$refs.treeRef.setCheckedKeys(res.data.rightIds,true);
         });
       } else {
         rolesApi.getRolesTree({ platform: 2 }).then(res => {
@@ -94,7 +96,7 @@ export default {
     },
 
     saveForm() {
-      let rightIds = this.$refs.treeRef.getCheckedKeys();
+      let rightIds = this.$refs.treeRef.getCheckedKeys().concat(this.$refs.treeRef.getHalfCheckedKeys());
       if (this.form.id) {
         //编辑的调用
         rolesApi

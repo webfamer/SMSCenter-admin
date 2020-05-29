@@ -36,7 +36,13 @@ function getorganiList(data) {
     data: { ...data }
   })
 }
-
+function getorganiAll(data) {
+  return request({
+    url: '/manage/sms/channel/listAll',
+    method: 'get',
+    data: data
+  })
+}
 
 
 
@@ -45,6 +51,7 @@ export default {
   delorgani,
   eidtorgani,
   getorganiDetail,
-  getorganiList
+  getorganiList,
+  getorganiAll
 }
 

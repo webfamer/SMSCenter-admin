@@ -1,8 +1,16 @@
 // 使用自己封装的api
 import request from '@/api/request'
-function getMsgDetail(data) {
+function getMsgSendLog(data) {
   return request({
-    url: '/sms-send-log/list',
+    url: '/manage/sms-send-log/list',
+    method: 'post',
+    data: { ...data }
+  })
+}
+
+function getMsgSendCount(data) {
+  return request({
+    url: '/manage/sms-statistics/list',
     method: 'post',
     data: { ...data }
   })
@@ -10,8 +18,7 @@ function getMsgDetail(data) {
 
 
 
-
 export default {
-    getMsgDetail
+  getMsgSendLog,getMsgSendCount
 }
 

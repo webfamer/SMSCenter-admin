@@ -29,11 +29,18 @@ function getCompanyList(data) {
     data: { ...data }
   })
 }
+function getCompanyDetail(data) {
+  return request({
+    url: '/manage/department/get',
+    method: 'get',
+    data: data
+  })
+}
 function getAllCompany(data) {
   return request({
     url: '/manage/department/listAll',
-    method: 'post',
-    data: { ...data }
+    method: 'get',
+    data: data
   })
 }
 
@@ -44,6 +51,7 @@ export default {
   delCompany,
   eidtCompany,
   getCompanyList,
-  getAllCompany
+  getAllCompany,
+  getCompanyDetail
 }
 

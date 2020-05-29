@@ -6,68 +6,91 @@
     :before-close="handleClose"
   >
     <el-form ref="form" :rules="formRules" :model="form" label-width="120px">
-      <el-form-item label="公司名称" prop="name">
-        <el-input v-model="form.name"></el-input>
+      <el-form-item label="产品名称" prop="applicationId">
+        <el-select
+          v-model="form.applicationId"
+          maxlength="10"
+          placeholder="请选择"
+        >
+          <el-option
+            v-for="item in appName"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="产品名称" prop="name">
-        <el-input v-model="form.name"></el-input>
+      <el-form-item label="短信机构" prop="channelId">
+        <el-select v-model="form.channelId" maxlength="10" placeholder="请选择">
+          <el-option
+            v-for="item in organiName"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
+        </el-select>
       </el-form-item>
-      <el-form-item label="短信机构" prop="name">
-        <el-input v-model="form.name"></el-input>
-      </el-form-item>
-      <el-form-item label="单价：元/条" prop="name">
+      <el-form-item label="单价：元/条" prop="price">
         <el-input v-model="form.price"></el-input>
       </el-form-item>
-      <el-form-item label="合作状态" prop="cooperationType">
+      <el-form-item label="合作状态">
         <el-select v-model="form.state" maxlength="10" placeholder="请选择">
           <el-option
-            v-for="item in this.$selectOptions.cooperateType"
+            v-for="item in this.$selectOptions.cooperateState"
             :key="item.value"
             :label="item.label"
             :value="item.value"
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="切换设置" prop="priority">
-        <el-select v-model="form.priority" maxlength="10" placeholder="请选择">
+      <el-form-item label="切换设置" prop="priorityType">
+        <el-select
+          v-model="form.priorityType"
+          maxlength="10"
+          placeholder="请选择"
+        >
           <el-option
-            v-for="item in this.$selectOptions.cooperateType"
+            v-for="item in this.$selectOptions.priorityType"
             :key="item.value"
             :label="item.label"
             :value="item.value"
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="优先级1" size="mini" prop="priority">
-        <el-select v-model="form.priority" maxlength="10" placeholder="请选择">
-          <el-option
-            v-for="item in this.$selectOptions.cooperateType"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="优先级2" size="mini" prop="priority">
-        <el-select v-model="form.priority" maxlength="10" placeholder="请选择">
-          <el-option
-            v-for="item in this.$selectOptions.cooperateType"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="优先级3" size="mini" prop="priority">
-        <el-select v-model="form.priority" maxlength="10" placeholder="请选择">
-          <el-option
-            v-for="item in this.$selectOptions.cooperateType"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
-      </el-form-item>
+      <div
+        v-for="(item, index) in dynamicItem"
+        :key="index"
+        v-show="form.priorityType != 3"
+      >
+        <el-form-item
+          :label="'优先级' + (index + 1)"
+          size="mini"
+          prop="priority"
+        >
+          <el-select
+            v-model="item.priority"
+            maxlength="10"
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="dataItem in organiName"
+              :key="dataItem.id"
+              :label="dataItem.name"
+              :value="dataItem.id"
+            ></el-option>
+          </el-select>
+          <i
+            class="el-icon-plus"
+            @click="addItem(item, index)"
+            style="cursor:pointer;"
+          ></i>
+          <i
+            class="el-icon-delete"
+            @click="deleteItem(item, index)"
+            style="cursor:pointer"
+          ></i>
+        </el-form-item>
+      </div>
       <el-form-item label="备注" prop="remark">
         <el-input type="textarea" autosize v-model="form.remark"></el-input>
       </el-form-item>
@@ -82,30 +105,34 @@
 <script>
 import { resetDataAttr } from "@/utils/index.js";
 import cooperateApi from "@/api/cooperateApi";
+import appApi from "@/api/appApi";
+
 import {
   validatePhone,
   validateChinese,
   validateEnglish
 } from "@/utils/validate";
 export default {
+  props: {
+    organiName: {
+      type: Array
+    }
+  },
   data() {
     return {
       form: {
-        name: "",
-        cooperationType: "",
-        remark: ""
+        applicationId: ""
       },
+      appName: [],
+      dynamicItem: [{ priority: "" }],
       dialogVisible: false,
       title: "添加客户",
       formRules: {
-        name: [
-          { required: true, message: "请输入中文名称", trigger: "blur" },
-          {
-            min: 1,
-            max: 10,
-            message: "长度在 3 到 10 个字符",
-            trigger: "blur"
-          }
+        applicationId: [
+          { required: true, message: "请选择产品", trigger: "blur" }
+        ],
+        channelId: [
+          { required: true, message: "请输选择机构", trigger: "blur" }
         ],
         cooperationType: [
           { required: true, message: "请选择时区", trigger: "blur" }
@@ -126,12 +153,16 @@ export default {
         .catch(_ => {});
     },
     openDialog(id) {
+      this.getAppName();
       this.dialogVisible = true;
       if (id) {
         this.title = "编辑客户"; //切换弹窗标题
         cooperateApi.getCooperationDetail(id).then(res => {
           this.$nextTick(() => {
             this.form = res.data;
+            if (this.form.priorityType == 2) {
+              this.dynamicItem = this.processToArr(res.data.priority);
+            }
           });
         });
       } else {
@@ -140,16 +171,49 @@ export default {
           //新增的时候重置表单就行了
           this.$refs["form"].resetFields();
           resetDataAttr(this, "form");
+          resetDataAttr(this, "dynamicItem");
         });
+      }
+    },
+    getAppName() {
+      appApi.getAppAll().then(res => {
+        this.$nextTick(() => [(this.appName = res.data)]);
+      });
+    },
+    processToString(item) {
+      var arr = [];
+      item.forEach(item => {
+        arr.push(item.priority);
+      });
+      return arr.join(",");
+    },
+    processToArr(item) {
+      var arr = [];
+      item.split(",").forEach(item => {
+        arr.push({ priority: Number(item) });
+      });
+      return arr;
+    },
+
+    addItem() {
+      this.dynamicItem.push({
+        priority: ""
+      });
+    },
+    deleteItem(item, index) {
+      if (index > 0) {
+        this.dynamicItem.splice(index, 1);
       }
     },
     addCompany(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+          let priority = this.processToString(this.dynamicItem); //处理下拉框数据
           if (this.form.id) {
-            companyApi
-              .eidtCompany({
-                ...this.form
+            cooperateApi
+              .eidtCooperation({
+                ...this.form,
+                priority
               })
               .then(res => {
                 console.log(res);
@@ -165,9 +229,10 @@ export default {
                 }
               });
           } else {
-            companyApi
-              .addCompany({
-                ...this.form
+            cooperateApi
+              .addCooperation({
+                ...this.form,
+                priority
               })
               .then(res => {
                 if (res.code == 0) {
@@ -189,7 +254,7 @@ export default {
       });
       console.log(this.form, "hahah");
     }
-  },
+  }
 };
 </script>
 

@@ -1,12 +1,16 @@
 <template>
   <div class="customer">
-        <el-card class="search-box" shadow="hover">
-      <p class="title"><i class="el-icon-menu"></i>短信机构管理</p>
+    <el-card class="search-box" shadow="hover">
+      <p class="title"><i class="el-icon-menu"></i>合作详情管理</p>
     </el-card>
     <div class="content-box">
       <el-card shadow="never">
         <div slot="header" class="clearfix">
-          <el-button type="primary" icon="el-icon-plus" @click="add"
+          <el-button
+            type="primary"
+            icon="el-icon-plus"
+            @click="add"
+            v-has="'cooperateAddBtn'"
             >新增合作</el-button
           >
         </div>
@@ -22,17 +26,17 @@
             min-width="100"
           ></el-table-column>
           <el-table-column
-            prop="name"
+            prop="applicationName"
             label="产品名称"
             min-width="100"
           ></el-table-column>
-             <el-table-column
-            prop="name"
+          <el-table-column
+            prop="channelName"
             label="公司名称"
             min-width="100"
           ></el-table-column>
-               <el-table-column
-            prop="name"
+          <el-table-column
+            prop="departmentName"
             label="短信机构"
             min-width="100"
           ></el-table-column>
@@ -44,18 +48,20 @@
           <el-table-column
             prop="state"
             label="状态"
+            :formatter="formatterState"
             min-width="100"
           ></el-table-column>
           <el-table-column
-            prop="priority"
+            prop="priorityType"
             label="优先级设置"
             min-width="100"
+            :formatter="formatterPriority"
           ></el-table-column>
           <el-table-column
-            prop="createTime"
+            prop="lastModifyTime"
             sortable=""
             label="最后操作时间"
-            min-width="120"
+            min-width="160"
           ></el-table-column>
           <el-table-column
             prop="remark"
@@ -65,6 +71,7 @@
           <el-table-column label="操作" min-width="200">
             <template slot-scope="scope">
               <el-button
+                v-has="'cooperateDelBtn'"
                 @click="delCompany(scope.row)"
                 type="text"
                 icon="el-icon-delete-solid"
@@ -72,6 +79,7 @@
                 >删除</el-button
               >
               <el-button
+                v-has="'cooperateEditBtn'"
                 type="text"
                 icon="el-icon-s-tools"
                 size="small"
@@ -82,19 +90,25 @@
           </el-table-column>
         </el-table>
         <Pagination
+          v-has="'coopratePageNationBtn'"
           :page="page"
           @sizeChange="handleSizeChange"
           @currentChange="handleCurrentChange"
         ></Pagination>
       </el-card>
     </div>
-    <Detail ref="detail" @getList="getTableData"></Detail>
+    <Detail
+      ref="detail"
+      @getList="getTableData"
+      :organiName="organiName"
+    ></Detail>
   </div>
 </template>
 <script>
 import Detail from "./Detail";
 import PageMixins from "@/mixins/pageMixins";
 import cooperateApi from "@/api/cooperateApi";
+import organiApi from "@/api/organiApi";
 import Pagination from "@/components/Pagination/index";
 import _ from "lodash";
 import { resetDataAttr } from "@/utils/index.js";
@@ -106,13 +120,14 @@ export default {
       value1: "",
       tableData: [],
       username: "",
+      organiName: [],
       search: {
         date: []
       }
     };
   },
   created() {
-    console.log("created");
+    this.getOrganiName();
     this.getTableData();
   },
   methods: {
@@ -143,7 +158,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          cooperateApi.delorgani(row.id).then(res => {
+          cooperateApi.delCooperation(row.id).then(res => {
             if (res.code == 0) {
               this.dialogVisible = false;
               this.getTableData();
@@ -185,11 +200,30 @@ export default {
       this.getTableData();
       resetDataAttr(this, "search");
     },
-    jumpsAppItem(row) {
-      this.$router.push({ name: "appitem", params: row });
+    getOrganiName() {
+      organiApi.getorganiAll().then(res => {
+        this.$nextTick(() => {
+          this.organiName = res.data;
+        });
+      });
     },
-    jumpAppservice(row) {
-      this.$router.push({ name: "appservice", params: row });
+    formatterPriority(row) {
+      let newItem = "";
+      this.$selectOptions.priorityType.forEach(item => {
+        if (item.value == row.priorityType) {
+          newItem = item.label;
+        }
+      });
+      return newItem;
+    },
+    formatterState(row) {
+      let newItem = "";
+      this.$selectOptions.cooperateState.forEach(item => {
+        if (item.value == row.state) {
+          newItem = item.label;
+        }
+      });
+      return newItem;
     }
   },
   components: {
@@ -200,7 +234,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .customer {
-    .search-box {
+  .search-box {
     .title {
       color: #666666;
       font-size: 20px;

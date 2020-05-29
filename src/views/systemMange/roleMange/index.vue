@@ -8,6 +8,7 @@
       <el-card shadow="never">
         <div slot="header" class="clearfix">
           <el-button type="primary" icon="el-icon-plus" @click="add"
+          v-has="'addRoleBtn'"
             >添加</el-button
           >
         </div>
@@ -59,12 +60,14 @@
               <el-button
                 @click="deleteRoles(scope.row)"
                 type="text"
+          v-has="'delRolebtn'"
                 icon="el-icon-delete-solid"
                 size="small"
                 >删除</el-button
               >
               <el-button
                 type="text"
+                v-has="'editRoleBtn'"
                 icon="el-icon-s-tools"
                 size="small"
                 @click="edit(scope.row)"
@@ -78,6 +81,7 @@
           style="float:right; margin-top:30px;margin-bottom:30px;"
         >
           <Pagination
+          v-has="'rolePaginationBtn'"
             :page="page"
             @sizeChange="handleSizeChange"
             @currentChange="handleCurrentChange"

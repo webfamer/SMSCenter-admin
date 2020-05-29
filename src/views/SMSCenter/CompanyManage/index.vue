@@ -1,9 +1,13 @@
 <template>
   <div class="customer">
+      <el-card class="search-box" shadow="hover">
+      <p class="title"><i class="el-icon-menu"></i>公司管理</p>
+    </el-card>
     <div class="content-box">
       <el-card shadow="never">
         <div slot="header" class="clearfix">
           <el-button type="primary" icon="el-icon-plus" @click="add"
+          v-has="'addCompanyBtn'"
             >新增公司</el-button
           >
         </div>
@@ -27,7 +31,8 @@
             min-width="120"
           ></el-table-column>
           <el-table-column
-            prop="cooperationType"
+          :formatter="formattercooperationType"
+            prop="cooperationTypes"
             label="合作类型"
             min-width="100"
           ></el-table-column>
@@ -49,6 +54,7 @@
                 type="text"
                 icon="el-icon-delete-solid"
                 size="small"
+          v-has="'delCompanyBtn'"
                 >删除</el-button
               >
               <el-button
@@ -56,12 +62,14 @@
                 icon="el-icon-s-tools"
                 size="small"
                 @click="edit(scope.row)"
+          v-has="'editCompanyBtn'"
                 >编辑</el-button
               >
             </template>
           </el-table-column>
         </el-table>
         <Pagination
+        v-has="'companyPaginantionBtn'"
           :page="page"
           @sizeChange="handleSizeChange"
           @currentChange="handleCurrentChange"
@@ -78,6 +86,7 @@ import companyApi from "@/api/companyApi";
 import Pagination from "@/components/Pagination/index";
 import _ from "lodash";
 import { resetDataAttr } from "@/utils/index.js";
+import {formatArr} from '@/assets/js/tableFormatter'
 export default {
   mixins: [PageMixins],
   data() {
@@ -92,7 +101,6 @@ export default {
     };
   },
   created() {
-    console.log("created");
     this.getTableData();
   },
   methods: {
@@ -109,9 +117,9 @@ export default {
           }
         })
         .then(res => {
-          this.tableData = res.data.records;
-          this.page.total = res.data.total;
-          this.page.start = res.data.current;
+          this.tableData = res.data;
+          this.page.total = res.page.total;
+          this.page.start = res.page.current;
         });
     },
     delCompany(row) {
@@ -144,7 +152,7 @@ export default {
         });
     },
     edit(row) {
-      this.$refs.detail.openDialog(row);
+      this.$refs.detail.openDialog(row.id);
     },
     add() {
       this.$refs.detail.openDialog();
@@ -170,6 +178,21 @@ export default {
     },
     jumpAppservice(row) {
       this.$router.push({ name: "appservice", params: row });
+    },
+        formattercooperationType(row) {
+      // if (row.cooperationTypes) {
+      //   let selectItem=this.$selectOptions.cooperateType;
+      //   let newarr = row.cooperationTypes.map(item => {  //newarr接受map的返回值
+      //     for (let i = 0; i < selectItem.length; i++) {
+      //       if (item == selectItem[i].value) {
+      //         return selectItem[i].label;
+      //       }
+      //     }
+      //   });
+      //   return newarr.join(",");
+
+      // }
+      return formatArr(row,'cooperateType','cooperationTypes')
     }
   },
   components: {
@@ -180,6 +203,13 @@ export default {
 </script>
 <style lang="scss" scoped>
 .customer {
+    .search-box {
+    .title {
+      color: #666666;
+      font-size: 20px;
+      padding-left: 20px;
+    }
+  }
   .content-box {
     margin: 30px;
     box-sizing: border-box;

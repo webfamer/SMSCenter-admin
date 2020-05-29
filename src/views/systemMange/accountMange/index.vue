@@ -2,19 +2,19 @@
   <div class="customer">
     <el-card class="search-box" shadow="hover">
       <el-row :gutter="24">
-        <el-col class="joker-col" :lg="6" :md="8">
+        <el-col class="joker-col" :lg="6" :md="8" v-has="'accountInputBtn'">
           <div class="block">
             <el-input
-              v-model="search.merchantChiName"
-              placeholder="搜索客户名称"
+              v-model="search.loginName"
+              placeholder="搜索账户名称"
             ></el-input>
           </div>
         </el-col>
-        <el-col class="joker-col" :lg="6" :md="8">
+        <el-col class="joker-col" :lg="6" :md="8" v-has="'dataInputBtn'">
           <el-date-picker
             v-model="search.date"
-            type="daterange"
-            value-format="yyyy-MM-dd"
+            type="datetimerange"
+            value-format="yyyy-MM-dd HH:mm:ss"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
@@ -22,9 +22,11 @@
         </el-col>
         <el-col class="joker-col" :lg="6" :md="8">
           <el-button type="primary" icon="el-icon-search" @click="doSearch"
+          v-has="'searchAccountBtn'"
             >查询</el-button
           >
           <el-button
+          v-has="'accountResetBtn'"
             type="primary"
             icon="el-icon-refresh-right"
             @click="resetForm"
@@ -38,6 +40,7 @@
       <el-card shadow="never">
         <div slot="header" class="clearfix">
           <el-button type="primary" icon="el-icon-plus" @click="add"
+          v-has="'addAccountBtn'"
             >新增</el-button
           >
         </div>
@@ -47,23 +50,8 @@
           :default-sort="{ prop: 'createTime', order: 'ascending' }"
         >
           <el-table-column
-            prop="createAdminId"
-            label="创建者id"
-            min-width="90"
-          ></el-table-column>
-          <el-table-column
-            prop="createTime"
-            label="创建时间"
-            min-width="90"
-          ></el-table-column>
-          <el-table-column
             prop="phone"
             label="手机号"
-            min-width="90"
-          ></el-table-column>
-          <el-table-column
-            prop="lastLoginTime"
-            label="最后登陆时间"
             min-width="90"
           ></el-table-column>
           <el-table-column
@@ -75,6 +63,7 @@
             prop="platform"
             label="账户类型"
             min-width="90"
+          :formatter="formateAccount"
           ></el-table-column>
           <el-table-column
             prop="roleId"
@@ -90,11 +79,28 @@
             prop="superAdmin"
             label="超级管理员"
             min-width="90"
+            :formatter="formateadmin"
+          ></el-table-column>
+           <el-table-column
+            prop="createTime"
+            label="创建时间"
+            min-width="90"
+          ></el-table-column>
+          <el-table-column
+            prop="createAdminId"
+            label="创建者id"
+            min-width="90"
+          ></el-table-column>
+                   <el-table-column
+            prop="lastLoginTime"
+            label="最后登陆时间"
+            min-width="90"
           ></el-table-column>
           <el-table-column label="操作" width="400">
             <template slot-scope="scope">
               <el-row v-show="scope.row.roleId !== 0">
                 <el-button
+                v-has="'delAccountBtn'"
                   @click="delAccount(scope.row)"
                   type="text"
                   icon="el-icon-delete-solid"
@@ -102,6 +108,7 @@
                   >删除</el-button
                 >
                 <el-button
+                v-has="'editAccountBtn'"
                   type="text"
                   icon="el-icon-s-tools"
                   size="small"
@@ -113,6 +120,7 @@
           </el-table-column>
         </el-table>
         <Pagination
+        v-has="'accountPaginationBtn'"
           :page="page"
           @sizeChange="handleSizeChange"
           @currentChange="handleCurrentChange"
@@ -143,16 +151,19 @@ export default {
     };
   },
   created() {
-    console.log("created");
     this.getTableData();
   },
   methods: {
     getTableData() {
-            if(this.page.start>1&& this.tableData.length===1){ //如果是最后一条数据，更改请求的当前页
-          this.page.start-=1;
-    }
+      if (this.page.start > 1 && this.tableData.length === 1) {
+        //如果是最后一条数据，更改请求的当前页
+        this.page.start -= 1;
+      }
       accountApi
         .getAccount({
+          ...this.search,
+          startDate:this.search.date[0],
+          endDate:this.search.date[1],
           page: {
             current: this.page.start,
             size: this.page.limit
@@ -226,6 +237,23 @@ export default {
     },
     jumpAppservice(row) {
       this.$router.push({ name: "appservice", params: row });
+    },
+        //格式化表单
+    formatform(row, selectItem, rowItem) {
+      //selelctItem是option.js里的数组名，rowITem是row里的参数名
+      let newItem = "";
+      this.$selectOptions[selectItem].forEach(item => {
+        if (item.value === row[rowItem]) {
+          newItem = item.label;
+        }
+      });
+      return newItem;
+    },
+    formateAccount(row) {
+      return this.formatform(row,"accountPlantform","platform");
+    },
+   formateadmin(row) {
+      return this.formatform(row, "accountFormat","superAdmin");
     }
   },
   components: {

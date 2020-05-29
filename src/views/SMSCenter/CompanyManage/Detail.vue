@@ -11,7 +11,8 @@
       </el-form-item>
       <el-form-item label="合作类型" prop="cooperationType">
         <el-select
-          v-model="form.cooperationType"
+          multiple
+          v-model="form.cooperationTypes"
           maxlength="10"
           placeholder="请选择"
         >
@@ -60,10 +61,10 @@ export default {
             max: 10,
             message: "长度在 3 到 10 个字符",
             trigger: "blur"
-          },
+          }
         ],
-        cooperationType: [
-          { required: true, message: "请选择时区", trigger: "blur" }
+        cooperationTypes: [
+          { required: true, message: "请选择公司", trigger: "blur" }
         ],
         description: [
           { required: true, message: "请输入描述信息", trigger: "blur" },
@@ -80,29 +81,37 @@ export default {
         })
         .catch(_ => {});
     },
-    openDialog(row) {
+    openDialog(id) {
       this.dialogVisible = true;
-      if (row) {
-        console.log(row,'传过来的数据')
+      if (id) {
+        console.log(id, "传过来的数据");
         this.title = "编辑客户"; //切换弹窗标题
-        this.$nextTick(() => {
-          this.form = row;
+        companyApi.getCompanyDetail(id).then(res => {
+          this.form = res.data;
+          console.log(this.form);
         });
-      }else{
+      } else {
         this.title = "新增客户";
-          this.$nextTick(() => {  //新增的时候重置表单就行了
-        this.$refs["form"].resetFields();
-        resetDataAttr(this, "form");
-      });
+        this.$nextTick(() => {
+          //新增的时候重置表单就行了
+          this.$refs["form"].resetFields();
+          resetDataAttr(this, "form");
+        });
       }
     },
     addCompany(formName) {
       this.$refs[formName].validate(valid => {
-        if (valid) {
+        if (valid) {  //和后台要的传值方式有关
+          let sum = this.form.cooperationTypes.reduce((num, item, index) => {
+            return num + item;
+          });
+          console.log(sum, "结算总值");
+          let params = JSON.parse(JSON.stringify(this.form));
+          params.cooperationType = sum;
           if (this.form.id) {
             companyApi
               .eidtCompany({
-                ...this.form
+                ...params
               })
               .then(res => {
                 console.log(res);
@@ -120,7 +129,7 @@ export default {
           } else {
             companyApi
               .addCompany({
-                ...this.form
+                ...params
               })
               .then(res => {
                 if (res.code == 0) {

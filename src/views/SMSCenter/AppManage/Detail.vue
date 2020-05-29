@@ -10,7 +10,11 @@
         <el-input v-model="form.name"></el-input>
       </el-form-item>
       <el-form-item label="所属公司" prop="departmentId">
-          <el-select v-model="form.departmentId" maxlength="10" placeholder="请输入">
+        <el-select
+          v-model="form.departmentId"
+          maxlength="10"
+          placeholder="请输入"
+        >
           <el-option
             v-for="item in this.companyNameData"
             :key="item.id"
@@ -19,6 +23,34 @@
           ></el-option>
         </el-select>
       </el-form-item>
+      <div v-for="(item, index) in form.dynamicItem" :key="index">
+        <el-form-item
+          :label="'白名单ip' + (index + 1)"
+          :prop="'dynamicItem.'+index+'.appIp'"
+          :rules="[
+            { required: true, message: '请输入ip地址', trigger: 'blur' },
+            { validator: validateIp, trigger: 'blur' }
+          ]"
+        >
+          <el-row>
+            <el-col :span="19" style="margin-right:5px">
+              <el-input v-model="item.appIp" size="mini"></el-input>
+            </el-col>
+            <el-col :span="4">
+              <i
+                class="el-icon-plus"
+                @click="addItem(item, index)"
+                style="cursor:pointer;"
+              ></i>
+              <i
+                class="el-icon-delete"
+                @click="deleteItem(item, index)"
+                style="cursor:pointer"
+              ></i>
+            </el-col>
+          </el-row>
+        </el-form-item>
+      </div>
       <el-form-item label="当前状态" prop="state">
         <el-select v-model="form.state" maxlength="10" placeholder="请输入">
           <el-option
@@ -30,7 +62,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="说明" prop="remark">
-        <el-input type="textarea" autosize v-model="form.remarkn"></el-input>
+        <el-input type="textarea" autosize v-model="form.remark"></el-input>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -44,48 +76,37 @@
 import { resetDataAttr } from "@/utils/index.js";
 import appApi from "@/api/appApi";
 import companyApi from "@/api/companyApi";
-import {
-  validatePhone,
-  validateChinese,
-  validateEnglish
-} from "@/utils/validate";
+import { validatePhone, validateIp } from "@/utils/validate";
 export default {
   data() {
     return {
       form: {
-   
+      dynamicItem: [{ appIp: "" }],
       },
-      companyNameData:[],
+      companyNameData: [],
       dialogVisible: false,
       title: "添加客户",
+      validateIp:validateIp,
       formRules: {
         name: [
-          { required: true, message: "请输入中文名称", trigger: "blur" },
+          { required: true, message: "请输入名称", trigger: "blur" },
           {
-            min: 3,
-            max: 10,
-            message: "长度在 3 到 10 个字符",
+            min: 1,
+            max: 20,
+            message: "长度在 1 到 20 个字符",
             trigger: "blur"
-          },
-          { validator: validateChinese, trigger: "blur" }
+          }
         ],
         departmentId: [
-          { required: true, message: "请选择公司", trigger: "blur" },
+          { required: true, message: "请选择公司", trigger: "blur" }
         ],
-        timeZone: [{ required: true, message: "请选择时区", trigger: "blur" }],
         description: [
           { required: true, message: "请输入描述信息", trigger: "blur" },
           { min: 3, max: 100, message: "最多输入3-100个字符", trigger: "blur" }
         ],
-        follower: [
-          { required: true, message: "请输入联系人", trigger: "blur" },
-          {
-            min: 2,
-            max: 20,
-            message: "长度在 2 到 20 个字符",
-            trigger: "blur"
-          },
-          { validator: validateChinese, trigger: "blur" }
+        appIp: [
+          { required: true, message: "请输入ip地址", trigger: "blur" },
+          { validator: validateIp, trigger: "blur" }
         ],
         phoneNumber: [
           { required: true, message: "请输入手机号码", trigger: "blur" },
@@ -107,7 +128,16 @@ export default {
       this.getCompanyNameList();
       if (row) {
         this.title = "编辑应用"; //切换弹窗标题
-        this.form = row;
+        // this.form = row;
+        // this.$nextTick(()=>{
+        //   this.dynamicItem = this.processToArr(res.data.appIp);
+        // })
+        appApi.getAppDetail(row.id).then(res => {
+          this.$nextTick(() => {
+            this.form = res.data;
+            this.form.dynamicItem = this.processToArr(res.data.ip);
+          });
+        });
       } else {
         (this.title = "新增应用"),
           this.$nextTick(() => {
@@ -117,38 +147,65 @@ export default {
       }
     },
     getCompanyNameList() {
-      companyApi.getAllCompany({ }).then(res => {
+      companyApi.getAllCompany().then(res => {
         this.$nextTick(() => {
           this.companyNameData = res.data;
-          console.log(res)
         });
       });
+    },
+    processToString(item) {
+      var arr = [];
+      item.forEach(item => {
+        arr.push(item.appIp);
+      });
+      return arr.join(",");
+    },
+    processToArr(item) {
+      var arr = [];
+      item.split(",").forEach(item => {
+        arr.push({ appIp: item });
+      });
+      console.log(arr, "回显数组");
+      return arr;
+    },
+    addItem() {
+      this.form.dynamicItem.push({
+        priority: ""
+      });
+    },
+    deleteItem(item, index) {
+      if (index > 0) {
+        this.form.dynamicItem.splice(index, 1);
+      }
     },
     addApp(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+          let appIp = this.processToString(this.form.dynamicItem);
           if (this.form.id) {
             appApi
               .eidtApp({
-                ...this.form
+                ...this.form,
+                appIp
               })
               .then(res => {
                 console.log(res);
                 if (res.code == 0) {
                   this.dialogVisible = false;
                   this.$message({
-                    message: res.msg,
+                    message: res.message,
                     type: "success"
                   });
                   this.$emit("getList");
                 } else {
-                  this.$message.error(res.msg);
+                  this.$message.error(res.message);
                 }
               });
           } else {
             appApi
               .addApp({
-                ...this.form
+                ...this.form,
+                appIp
               })
               .then(res => {
                 if (res.code == 0) {
@@ -159,7 +216,7 @@ export default {
                   });
                   this.$emit("getList");
                 } else {
-                  this.$message.error(res.msg);
+                  this.$message.error(res.message);
                 }
               });
           }
