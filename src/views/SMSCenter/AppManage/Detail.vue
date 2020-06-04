@@ -6,7 +6,7 @@
     :before-close="handleClose"
   >
     <el-form ref="form" :rules="formRules" :model="form" label-width="120px">
-      <el-form-item label="产品名称" prop="name">
+      <el-form-item label="应用名称" prop="name">
         <el-input v-model="form.name"></el-input>
       </el-form-item>
       <el-form-item label="所属公司" prop="departmentId">
@@ -100,6 +100,9 @@ export default {
         departmentId: [
           { required: true, message: "请选择公司", trigger: "blur" }
         ],
+        state:[
+          { required: true, message: "请选择状态", trigger: "blur" }
+        ],
         description: [
           { required: true, message: "请输入描述信息", trigger: "blur" },
           { min: 3, max: 100, message: "最多输入3-100个字符", trigger: "blur" }
@@ -135,7 +138,8 @@ export default {
         appApi.getAppDetail(row.id).then(res => {
           this.$nextTick(() => {
             this.form = res.data;
-            this.form.dynamicItem = this.processToArr(res.data.ip);
+            //vue 不允许在已经创建的实例上动态添加新的根级响应式属性 
+            this.$set(this.form,'dynamicItem',this.processToArr(res.data.ip))
           });
         });
       } else {
@@ -169,8 +173,9 @@ export default {
       return arr;
     },
     addItem() {
+      console.log(this.form.dynamicItem)
       this.form.dynamicItem.push({
-        priority: ""
+        appIp: ""
       });
     },
     deleteItem(item, index) {
@@ -198,7 +203,7 @@ export default {
                   });
                   this.$emit("getList");
                 } else {
-                  this.$message.error(res.message);
+                  // this.$message.error(res.message);
                 }
               });
           } else {
@@ -216,7 +221,7 @@ export default {
                   });
                   this.$emit("getList");
                 } else {
-                  this.$message.error(res.message);
+                  // this.$message.error(res.message);
                 }
               });
           }

@@ -6,10 +6,10 @@
     :before-close="handleClose"
   >
     <el-form ref="form" :rules="formRules" :model="form" label-width="120px">
-      <el-form-item label="产品名称" prop="name">
+      <el-form-item label="公司名称" prop="name">
         <el-input v-model="form.name"></el-input>
       </el-form-item>
-      <el-form-item label="合作类型" prop="cooperationType">
+      <el-form-item label="合作类型" prop="cooperationTypes">
         <el-select
           multiple
           v-model="form.cooperationTypes"
@@ -64,7 +64,7 @@ export default {
           }
         ],
         cooperationTypes: [
-          { required: true, message: "请选择公司", trigger: "blur" }
+          { required: true, message: "请选择合作类型", trigger: "blur" }
         ],
         description: [
           { required: true, message: "请输入描述信息", trigger: "blur" },
@@ -85,13 +85,13 @@ export default {
       this.dialogVisible = true;
       if (id) {
         console.log(id, "传过来的数据");
-        this.title = "编辑客户"; //切换弹窗标题
+        this.title = "编辑公司"; //切换弹窗标题
         companyApi.getCompanyDetail(id).then(res => {
           this.form = res.data;
           console.log(this.form);
         });
       } else {
-        this.title = "新增客户";
+        this.title = "新增公司";
         this.$nextTick(() => {
           //新增的时候重置表单就行了
           this.$refs["form"].resetFields();
@@ -123,7 +123,7 @@ export default {
                   });
                   this.$emit("getList");
                 } else {
-                  this.$message.error(res.message);
+                  // this.$message.error(res.message);
                 }
               });
           } else {
@@ -140,7 +140,7 @@ export default {
                   });
                   this.$emit("getList");
                 } else {
-                  this.$message.error(res.message);
+                  // this.$message.error(res.message);
                 }
               });
           }

@@ -22,6 +22,15 @@ export function logout() {
     method: 'post'
   })
 }
+
+export function sendVerifyCode(data) {
+  return request({
+    url: '/manage/account/send/login/verification/code',
+    method: 'post',
+    data:data
+  })
+}
+
 export default{
   login
 }

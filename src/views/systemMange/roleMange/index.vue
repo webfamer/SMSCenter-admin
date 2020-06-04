@@ -48,12 +48,12 @@
           <el-table-column
             prop="createTime"
             label="创建时间"
-            min-width="120"
+            min-width="180"
           ></el-table-column>
           <el-table-column
             prop="updateTime"
             label="修改时间"
-            min-width="120"
+            min-width="180"
           ></el-table-column>
           <el-table-column label="操作" min-width="150">
             <template slot-scope="scope">

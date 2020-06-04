@@ -23,21 +23,21 @@
           <el-table-column
             prop="id"
             label="合作ID"
-            min-width="100"
+            min-width="50"
           ></el-table-column>
           <el-table-column
             prop="applicationName"
-            label="产品名称"
+            label="应用名称"
             min-width="100"
           ></el-table-column>
           <el-table-column
             prop="channelName"
-            label="公司名称"
+            label="短信机构"
             min-width="100"
           ></el-table-column>
           <el-table-column
             prop="departmentName"
-            label="短信机构"
+            label="公司名称"
             min-width="100"
           ></el-table-column>
           <el-table-column

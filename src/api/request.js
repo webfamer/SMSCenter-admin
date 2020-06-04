@@ -6,6 +6,7 @@ import { getToken, removeToken } from '@/utils/auth'
 import router from '@/router';
 
 let baseURL = 'http://192.168.40.175:7000';
+// http://192.168.40.175:7000
 // if (process.env.NODE_ENV === "production") {
 //   baseURL = process.env.VUE_APP_BASE_API
 // }
@@ -30,7 +31,8 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => {
     const res = response.data;
-    if (res.code != 0) {
+    // response.config.responseType 加该判断 下载excel的时候不报错
+    if (res.code != 0&&!response.config.responseType) {
       Message({
         message: res.message,
         type: 'error',

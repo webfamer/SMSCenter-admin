@@ -16,9 +16,16 @@ function getMsgSendCount(data) {
   })
 }
 
-
+function exportExcel(data) {
+  return request({
+    url: '/manage/sms-statistics/list/export/excel',
+    method: 'post',
+    data: { ...data },
+    responseType:'blob',
+  })
+}
 
 export default {
-  getMsgSendLog,getMsgSendCount
+  getMsgSendLog,getMsgSendCount,exportExcel
 }
 

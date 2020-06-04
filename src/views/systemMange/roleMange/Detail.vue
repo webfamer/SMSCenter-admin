@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    title="新增角色"
+    :title="title"
     :visible.sync="dialogVisible"
     width="30%"
     :before-close="handleClose"
@@ -45,6 +45,7 @@ export default {
       keyAssociate:false,
       // 权限树
       rightsList: [],
+      title:'',
       treeProps: {
         label: "title",
         children: "children"
@@ -63,11 +64,13 @@ export default {
       this.resetform();
       this.dialogVisible = true;
       if (data) {
+          this.title = "编辑角色";
         this.keyAssociate=true;
         this.form = data;
         this.getTreeNode(data.id);
       } else {
         this.keyAssociate=false
+        this.title = "新增角色";
         this.getTreeNode();
       }
     },
@@ -114,7 +117,7 @@ export default {
               });
               this.$emit("getList");
             } else {
-              this.$message.error(res.msg);
+              // this.$message.error(res.msg);
             }
           });
       } else {
@@ -134,7 +137,7 @@ export default {
               });
               this.$emit("getList");
             } else {
-              this.$message.error(res.message);
+              // this.$message.error(res.message);
             }
           });
       }

@@ -8,7 +8,7 @@
         <div slot="header" class="clearfix">
           <el-button type="primary" icon="el-icon-plus" @click="add"
           v-has="'addAppBtn'"
-            >新增产品</el-button
+            >新增应用</el-button
           >
         </div>
         <el-table
@@ -21,7 +21,7 @@
           </el-table-column>
           <el-table-column
             prop="name"
-            label="产品名称"
+            label="应用名称"
             min-width="100"
           ></el-table-column>
           <el-table-column
@@ -44,7 +44,7 @@
             prop="updateTime"
             sortable=""
             label="更新时间"
-            min-width="120"
+            min-width="180"
           ></el-table-column>
           <el-table-column label="操作" min-width="200">
             <template slot-scope="scope">

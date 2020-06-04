@@ -10,7 +10,7 @@
         <el-input v-model="form.name"></el-input>
       </el-form-item>
       <el-form-item label="单价：元/条" prop="price">
-        <el-input v-model="form.price"></el-input>
+        <el-input v-model.number="form.price"></el-input>
       </el-form-item>
       <el-form-item label="状态" prop="state">
         <el-select v-model="form.state" maxlength="10" placeholder="请选择">
@@ -57,22 +57,14 @@ export default {
       form: {
         name: "",
         priority:'',
+        price:'',
         remark: ""
       },
       dialogVisible: false,
       title: "添加客户",
       formRules: {
         name: [
-          { required: true, message: "请输入中文名称", trigger: "blur" },
-          {
-            min: 1,
-            max: 10,
-            message: "长度在 3 到 10 个字符",
-            trigger: "blur"
-          }
-        ],
-        price: [
-          { required: true, message: "请输入价格", trigger: "blur" },
+          { required: true, message: "请输入名称", trigger: "blur" },
           {
             min: 1,
             max: 10,
@@ -80,7 +72,17 @@ export default {
             trigger: "blur"
           }
         ],
-        cooperationType: [
+        price: [
+          { required: true, message: "请输入价格", trigger: "blur" },
+          {
+            min: 0,
+            max: 999,
+            type:'number',
+            message: "价格在0-999元之间",
+            trigger: "blur"
+          }
+        ],
+        state: [
           { required: true, message: "请输入状态", trigger: "blur" }
         ],
         description: [
@@ -101,15 +103,16 @@ export default {
     openDialog(id) {
       this.dialogVisible = true;
       if (id) {
-        this.title = "编辑客户"; //切换弹窗标题
+        this.title = "编辑机构"; //切换弹窗标题
         organiApi.getorganiDetail(id).then(res => {
        this.$nextTick(() => {
           this.form = res.data;
+          console.log(this.form)
         });
         });
       
       } else {
-        this.title = "新增客户";
+        this.title = "新增机构";
         this.$nextTick(() => {
           //新增的时候重置表单就行了
           this.$refs["form"].resetFields();
@@ -118,6 +121,7 @@ export default {
       }
     },
     addorgani(formName) {
+      console.log(this.form,'要提交的数据')
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.form.id) {
@@ -135,7 +139,7 @@ export default {
                   });
                   this.$emit("getList");
                 } else {
-                  this.$message.error(res.message);
+                  // this.$message.error(res.message);
                 }
               });
           } else {
@@ -152,7 +156,7 @@ export default {
                   });
                   this.$emit("getList");
                 } else {
-                  this.$message.error(res.message);
+                  // this.$message.error(res.message);
                 }
               });
           }

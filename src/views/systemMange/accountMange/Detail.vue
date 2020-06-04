@@ -102,14 +102,14 @@ export default {
       this.dialogVisible = true;
       this.getRoleNameList();
       if (row) {
-        this.title = "编辑角色"; //切换弹窗标题
+        this.title = "编辑账号"; //切换弹窗标题
         this.showPasswordInput = false;
         this.$nextTick(() => {
           this.form = row;
         });
       } else {
         this.showPasswordInput = true;
-        this.title = "新增角色";
+        this.title = "新增账号";
          this.$nextTick(() => {
         this.$refs["form"].resetFields();
         resetDataAttr(this, "form");
@@ -141,7 +141,7 @@ export default {
                   });
                   this.$emit("getList");
                 } else {
-                  this.$message.error(res.message);
+                  // this.$message.error(res.message);
                 }
               });
           } else {
@@ -162,7 +162,7 @@ export default {
                   });
                   this.$emit("getList");
                 } else {
-                  this.$message.error(res.message);
+                  // this.$message.error(res.message);
                 }
               });
           }

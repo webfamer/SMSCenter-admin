@@ -84,7 +84,7 @@
            <el-table-column
             prop="createTime"
             label="创建时间"
-            min-width="90"
+            min-width="180"
           ></el-table-column>
           <el-table-column
             prop="createAdminId"
@@ -94,7 +94,7 @@
                    <el-table-column
             prop="lastLoginTime"
             label="最后登陆时间"
-            min-width="90"
+            min-width="180"
           ></el-table-column>
           <el-table-column label="操作" width="400">
             <template slot-scope="scope">
@@ -229,8 +229,8 @@ export default {
       this.getTableData();
     },
     resetForm() {
-      this.getTableData();
       resetDataAttr(this, "search");
+      this.getTableData();
     },
     jumpsAppItem(row) {
       this.$router.push({ name: "appitem", params: row });

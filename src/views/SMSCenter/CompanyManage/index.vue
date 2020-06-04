@@ -28,7 +28,7 @@
             prop="createTime"
             sortable=""
             label="合作开始时间"
-            min-width="120"
+            min-width="180"
           ></el-table-column>
           <el-table-column
           :formatter="formattercooperationType"
@@ -45,7 +45,7 @@
             prop="updateTime"
             sortable=""
             label="更新时间"
-            min-width="120"
+            min-width="180"
           ></el-table-column>
           <el-table-column label="操作" min-width="200">
             <template slot-scope="scope">

@@ -11,7 +11,7 @@ function addorgani(data) {
 function delorgani(data) {
   return request({
     url: '/manage/sms/channel/deleteById',
-    method: get,
+    method: 'get',
     data: data
   })
 }

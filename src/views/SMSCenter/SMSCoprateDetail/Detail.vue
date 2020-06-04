@@ -6,7 +6,7 @@
     :before-close="handleClose"
   >
     <el-form ref="form" :rules="formRules" :model="form" label-width="120px">
-      <el-form-item label="产品名称" prop="applicationId">
+      <el-form-item label="应用名称" prop="applicationId">
         <el-select
           v-model="form.applicationId"
           maxlength="10"
@@ -60,7 +60,7 @@
       <div
         v-for="(item, index) in dynamicItem"
         :key="index"
-        v-show="form.priorityType != 3"
+        v-show="form.priorityType==2"
       >
         <el-form-item
           :label="'优先级' + (index + 1)"
@@ -156,7 +156,7 @@ export default {
       this.getAppName();
       this.dialogVisible = true;
       if (id) {
-        this.title = "编辑客户"; //切换弹窗标题
+        this.title = "编辑合作"; //切换弹窗标题
         cooperateApi.getCooperationDetail(id).then(res => {
           this.$nextTick(() => {
             this.form = res.data;
@@ -166,7 +166,7 @@ export default {
           });
         });
       } else {
-        this.title = "新增客户";
+        this.title = "新增合作";
         this.$nextTick(() => {
           //新增的时候重置表单就行了
           this.$refs["form"].resetFields();
@@ -225,7 +225,7 @@ export default {
                   });
                   this.$emit("getList");
                 } else {
-                  this.$message.error(res.message);
+                  // this.$message.error(res.message);
                 }
               });
           } else {
@@ -243,7 +243,7 @@ export default {
                   });
                   this.$emit("getList");
                 } else {
-                  this.$message.error(res.message);
+                  // this.$message.error(res.message);
                 }
               });
           }

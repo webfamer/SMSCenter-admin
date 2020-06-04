@@ -14,7 +14,7 @@
         </el-col>
         <el-col class="joker-col" :lg="6" :md="8" v-has="'productSelectBtn'">
           <div class="search-item">
-            <span>产品名称</span>
+            <span>应用名称</span>
                     <el-select
               v-model="search.applicationId"
               maxlength="10"
@@ -121,13 +121,13 @@
             <span>结算价格</span>
             <el-input
               size="mini"
-              v-model="search.merchantChiName"
+              v-model="search.beginPrice"
               placeholder="开始价格范围"
             ></el-input>
             -
             <el-input
               size="mini"
-              v-model="search.merchantChiName"
+              v-model="search.endPrice"
               placeholder="结束价格范围"
             ></el-input>
           </div>
@@ -177,7 +177,7 @@
           ></el-table-column>
           <el-table-column
             prop="applicationName"
-            label="产品名称"
+            label="应用名称"
             min-width="150"
           ></el-table-column>
           <el-table-column
@@ -283,8 +283,8 @@ export default {
       this.getTableData();
     },
     resetForm() {
-      this.getTableData();
       resetDataAttr(this, "search");
+      this.getTableData();
     },
     getAppName() {
       appApi.getAppAll().then(res => {

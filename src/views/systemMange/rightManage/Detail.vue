@@ -115,7 +115,7 @@ export default {
         superId:''
       },
       dialogVisible: false,
-      title: "添加客户",
+      title: "添加权限",
       formRules: {
         platform: [{ required: true, message: "不能为空", trigger: "blur" }],
         requireAuth: [{ required: true, message: "不能为空", trigger: "blur" }],
@@ -137,6 +137,7 @@ export default {
         .catch(_ => {});
     },
     openDialog(id) {
+        this.title = "新增权限"; //切换弹窗标题
       this.dialogVisible = true;
       this.$nextTick(() => {
         this.$refs["form"].resetFields();
@@ -144,7 +145,7 @@ export default {
       });
       console.log(id);
       if (id) {
-        this.title = "编辑客户"; //切换弹窗标题
+        this.title = "编辑权限"; //切换弹窗标题
         rightApi
           .getrightDetail({
             id: id
@@ -184,7 +185,7 @@ export default {
                   });
                   this.$emit("getList");
                 } else {
-                  this.$message.error(res.message);
+                  // this.$message.error(res.message);
                 }
               });
           } 
@@ -206,7 +207,7 @@ export default {
                   });
                   this.$emit("getList");
                 } else {
-                  this.$message.error(res.message);
+                  // this.$message.error(res.message);
                 }
               });
           }

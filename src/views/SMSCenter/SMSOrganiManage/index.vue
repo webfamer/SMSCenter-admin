@@ -17,6 +17,16 @@
           stripe
           :default-sort="{ prop: 'createTime', order: 'ascending' }"
         >
+           <el-table-column
+            prop="id"
+            label="机构ID"
+            min-width="50"
+          ></el-table-column>
+          <el-table-column
+            prop="createTime"
+            label="接入时间"
+            min-width="180"
+          ></el-table-column>
           <el-table-column
             prop="name"
             label="机构名称"
@@ -39,10 +49,10 @@
             min-width="100"
           ></el-table-column>
           <el-table-column
-            prop="createTime"
+            prop="updateTime"
             sortable=""
             label="最后操作时间"
-            min-width="120"
+            min-width="180"
           ></el-table-column>
           <el-table-column
             prop="remark"
@@ -146,7 +156,7 @@ export default {
             }
           });
         })
-        .catch(() => {
+        .catch((res) => {
           this.$message({
             type: "info",
             message: "取消删除"
