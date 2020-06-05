@@ -15,7 +15,7 @@
         <el-col class="joker-col" :lg="6" :md="8" v-has="'productSelectBtn'">
           <div class="search-item">
             <span>应用名称</span>
-                    <el-select
+            <el-select
               v-model="search.applicationId"
               maxlength="10"
               size="mini"
@@ -40,7 +40,7 @@
               placeholder="请选择"
             >
               <el-option
-                v-for="dataItem in  this.$selectOptions.sendType"
+                v-for="dataItem in this.$selectOptions.sendType"
                 :key="dataItem.value"
                 :label="dataItem.label"
                 :value="dataItem.value"
@@ -58,7 +58,7 @@
               placeholder="请选择"
             >
               <el-option
-                v-for="dataItem in  organiName"
+                v-for="dataItem in organiName"
                 :key="dataItem.id"
                 :label="dataItem.name"
                 :value="dataItem.id"
@@ -86,7 +86,7 @@
               placeholder="请选择"
             >
               <el-option
-                v-for="dataItem in  this.$selectOptions.sendState"
+                v-for="dataItem in this.$selectOptions.sendState"
                 :key="dataItem.value"
                 :label="dataItem.label"
                 :value="dataItem.value"
@@ -98,20 +98,12 @@
           <div class="search-item">
             <span>发送时间</span>
             <el-date-picker
-              v-model="search.startTime"
-              type="datetime"
+              v-model="search.time"
+              type="datetimerange"
               value-format="yyyy-MM-dd HH:mm:ss"
+              :picker-options="pickerOptions"
               size="mini"
               placeholder="选择开始时间"
-            >
-            </el-date-picker>
-            -
-            <el-date-picker
-              v-model="search.endTime"
-              type="datetime"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              size="mini"
-              placeholder="选择结束"
             >
             </el-date-picker>
           </div>
@@ -134,7 +126,7 @@
         </el-col>
         <el-col class="joker-col" :lg="6" :md="8" v-has="'phoneInputBtn'">
           <el-button
-          v-has="'searchBtn'"
+            v-has="'searchBtn'"
             type="primary"
             icon="el-icon-search"
             size="mini"
@@ -142,7 +134,7 @@
             >查询</el-button
           >
           <el-button
-          v-has="'resetBtn'"
+            v-has="'resetBtn'"
             type="primary"
             size="mini"
             icon="el-icon-refresh-right"
@@ -220,7 +212,7 @@
           ></el-table-column>
         </el-table>
         <Pagination
-        v-has="'sendDetaiPaginationBtn'"
+          v-has="'sendDetaiPaginationBtn'"
           :page="page"
           @sizeChange="handleSizeChange"
           @currentChange="handleCurrentChange"
@@ -235,7 +227,7 @@ import Pagination from "@/components/Pagination/index";
 import smsDetailApi from "@/api/SMSDetail";
 import appApi from "@/api/appApi";
 import organiApi from "@/api/organiApi";
-import {formatform} from '@/assets/js/tableFormatter'
+import { formatform } from "@/assets/js/tableFormatter";
 import _ from "lodash";
 import { resetDataAttr } from "@/utils/index.js";
 export default {
@@ -245,20 +237,48 @@ export default {
       input: "",
       sendTime: "",
       tableData: [],
-      search: {},
+      search: {time:[]},
       appName: [],
-      organiName: []
+      organiName: [],
     };
   },
   created() {
-    this.getTableData();
     this.getAppName();
     this.getOrganiName();
+    this.getdatatime();
+    this.getTableData();
+  },
+  computed: {
+    pickerOptions() {
+      let _this = this;
+      return {
+        disabledDate(time) {
+          const times = 86400000 * 180; //一周的毫秒数
+          let curSelectTime = new Date(_this.minDate).getTime();
+          let before = curSelectTime - times; //前一周毫秒数
+          let after = curSelectTime + times; //后一周毫秒数
+          return time.getTime() > after || time.getTime() < before;
+        },
+        onPick({ maxDate, minDate }) {
+          if (!maxDate) {
+            _this.minDate = minDate;
+          }
+        }
+      };
+    }
   },
   methods: {
     getTableData() {
+      if (this.search.time == null) {
+        this.$message.error("查询时间不能为空");
+      }
+      let params = {
+        startTime: this.search.time[0],
+        endTime: this.search.time[1],
+      };
       smsDetailApi
         .getMsgSendLog({
+          ...params,
           ...this.search,
           page: {
             current: this.page.start,
@@ -270,6 +290,35 @@ export default {
           this.page.total = res.page.total;
           this.page.start = res.page.current;
         });
+    },
+        dateFormat(fmt, date) {
+      let ret;
+      const opt = {
+        "Y+": date.getFullYear().toString(), // 年
+        "m+": (date.getMonth() + 1).toString(), // 月
+        "d+": date.getDate().toString(), // 日
+        "H+": date.getHours().toString(), // 时
+        "M+": date.getMinutes().toString(), // 分
+        "S+": date.getSeconds().toString() // 秒
+        // 有其他格式化字符需求可以继续添加，必须转化成字符串
+      };
+      for (let k in opt) {
+        ret = new RegExp("(" + k + ")").exec(fmt);
+        if (ret) {
+          fmt = fmt.replace(
+            ret[1],
+            ret[1].length == 1 ? opt[k] : opt[k].padStart(ret[1].length, "0")
+          );
+        }
+      }
+      return fmt;
+    },
+    getdatatime() {
+      //默认显示今天
+      let date = new Date();
+      let formatdate = this.dateFormat("YYYY-mm-dd HH:MM:SS", date);
+      console.log(formatdate)
+      this.search.time = [formatdate, formatdate];
     },
     handleSizeChange(v) {
       this.page.limit = v;
@@ -284,6 +333,7 @@ export default {
     },
     resetForm() {
       resetDataAttr(this, "search");
+      this.getdatatime();
       this.getTableData();
     },
     getAppName() {

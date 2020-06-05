@@ -2,6 +2,24 @@
   <div class="customer">
     <el-card class="search-box" shadow="hover">
       <el-row :gutter="20">
+        <el-col class="joker-col" :lg="6" :md="8" v-has="'sendCompanySelectBtn'">
+          <div class="search-item">
+            <span>发送公司</span>
+            <el-select
+              v-model="search.departmentId"
+              maxlength="10"
+              size="mini"
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="dataItem in companyName"
+                :key="dataItem.id"
+                :label="dataItem.name"
+                :value="dataItem.id"
+              ></el-option>
+            </el-select>
+          </div>
+        </el-col>
         <el-col class="joker-col" :lg="6" :md="8" v-has="'sendtimeInputBtn'">
           <div class="search-item">
             <span>发送时间</span>
@@ -115,11 +133,11 @@
           >
           </el-table-column>
         </el-table>
-        <!-- <Pagination
+        <Pagination
           :page="page"
           @sizeChange="handleSizeChange"
           @currentChange="handleCurrentChange"
-        ></Pagination> -->
+        ></Pagination>
       </el-card>
     </div>
   </div>
@@ -129,6 +147,7 @@ import PageMixins from "@/mixins/pageMixins";
 import Pagination from "@/components/Pagination/index";
 import smsDetailApi from "@/api/SMSDetail";
 import _ from "lodash";
+import companyApi from '@/api/companyApi'
 import { resetDataAttr } from "@/utils/index.js";
 export default {
   mixins: [PageMixins],
@@ -138,6 +157,7 @@ export default {
       sendTime: "",
       tableData: [],
       channelName: "",
+      companyName:[],
       search: {
         time: []
       },
@@ -145,15 +165,16 @@ export default {
     };
   },
   created() {
-    this.getTableData();
     this.getdatatime();
+    this.getCompanyName();
+    this.getTableData();
   },
   computed: {
     pickerOptions() {
       let _this = this;
       return {
         disabledDate(time) {
-          const times = 86400000 * 15; //一周的毫秒数
+          const times = 86400000 * 180; //一周的毫秒数
           let curSelectTime = new Date(_this.minDate).getTime();
           let before = curSelectTime - times; //前一周毫秒数
           let after = curSelectTime + times; //后一周毫秒数
@@ -184,6 +205,9 @@ export default {
       });
     },
     getTableData() {
+      if (this.search.time == null || this.search.time.length == 0) {
+        this.$message.error("查询时间不能为空");
+      }
       let params = {
         startTime: this.search.time[0],
         endTime: this.search.time[1],
@@ -202,11 +226,15 @@ export default {
             this.createTabelHead(res.data.channelName);
           }
           this.tableData = this.ProcessTableData(res.data.smsStatisTicsList);
-          // this.page.total = res.page.total;
-          // this.page.start = res.page.current;
+          this.page.total = res.page.total;
+          this.page.start = res.page.current;
         });
     },
-
+    getCompanyName(){
+      companyApi.getAllCompany().then(res => {
+        this.companyName = res.data;
+      });
+    },
     handleSizeChange(v) {
       this.page.limit = v;
       this.getTableData();
@@ -220,6 +248,7 @@ export default {
     },
     resetForm() {
       resetDataAttr(this, "search");
+      this.getdatatime();
       this.getTableData();
     },
     dateFormat(fmt, date) {
