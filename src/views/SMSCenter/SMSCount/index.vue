@@ -97,7 +97,7 @@
           ></el-table-column>
           <el-table-column
             prop="departmentName"
-            label="部门"
+            label="公司"
             min-width="150"
           ></el-table-column>
           <el-table-column
@@ -284,7 +284,8 @@ export default {
       smsDetailApi
         .exportExcel({
           startTime: this.search.time[0],
-          endTime: this.search.time[1]
+          endTime: this.search.time[1],
+          ...this.search
         })
         .then(res => {
           const blob = new Blob([res]); //new Blob([res])中不加data就会返回下图中[objece objece]内容（少取一层）
