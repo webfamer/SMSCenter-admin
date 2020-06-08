@@ -237,9 +237,9 @@ export default {
           this.$store
             .dispatch("user/login", loginInfo)
             .then(res => {
-              if (res.code != 0) {
-                this.$message.error(res.message);
-              }
+              // if (res.code != 0) {
+              //   this.$message.error(res.message);
+              // }
               this.$router.push({ path: this.redirect || "/dashboard" });
               this.loading = false;
             })
