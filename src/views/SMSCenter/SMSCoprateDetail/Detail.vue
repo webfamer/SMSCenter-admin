@@ -162,6 +162,8 @@ export default {
             this.form = res.data;
             if (this.form.priorityType == 2) {
               this.dynamicItem = this.processToArr(res.data.priority);
+              console.log(this.dynamicItem)
+              console.log(this.organiName)
             }
           });
         });
@@ -190,7 +192,7 @@ export default {
     processToArr(item) {
       var arr = [];
       item.split(",").forEach(item => {
-        arr.push({ priority: Number(item) });
+        arr.push({ priority: item });
       });
       return arr;
     },
@@ -216,7 +218,6 @@ export default {
                 priority
               })
               .then(res => {
-                console.log(res);
                 if (res.code == 0) {
                   this.dialogVisible = false;
                   this.$message({
@@ -252,7 +253,6 @@ export default {
           return false;
         }
       });
-      console.log(this.form, "hahah");
     }
   }
 };
